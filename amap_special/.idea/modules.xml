@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/amap_special.iml" filepath="$PROJECT_DIR$/amap_special.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/amap_special_android.iml" filepath="$PROJECT_DIR$/android/amap_special_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/android/amap_special_example_android.iml" filepath="$PROJECT_DIR$/example/android/amap_special_example_android.iml" />
+    </modules>
+  </component>
+</project>
