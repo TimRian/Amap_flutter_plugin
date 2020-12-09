@@ -122,6 +122,8 @@
     [description appendFormat:@", self.infoWindowOffsetY=%i", self.infoWindowOffsetY];
     [description appendFormat:@", self.snippet=%p", self.snippet];
     [description appendFormat:@", self.title=%p", self.title];
+    [description appendFormat:@", self.allVin=%p", self.allVin];
+    [description appendFormat:@", self.titleColor=%p", self.titleColor];
     [description appendFormat:@", self.zIndex=%f", self.zIndex];
     [description appendFormat:@", self.lockedToScreen=%d", self.lockedToScreen];
     [description appendFormat:@", self.lockedScreenPoint=%@", self.lockedScreenPoint];

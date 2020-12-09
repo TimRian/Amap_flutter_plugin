@@ -43,15 +43,58 @@ android {
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
+    }
+
+    signingConfigs {
+        config {
+            keyAlias 'ifoton'
+            keyPassword 'ifoton-9526'
+            storeFile file('../app/ifoton_rezahomes.jks')
+            storePassword 'ifoton-9526'
+        }
+        release {
+            keyAlias 'ifoton'
+            keyPassword 'ifoton-9526'
+            storeFile file('../app/ifoton_rezahomes.jks')
+            storePassword 'ifoton-9526'
+        }
+        debug {
+            keyAlias 'ifoton'
+            keyPassword 'ifoton-9526'
+            storeFile file('../app/ifoton_rezahomes.jks')
+            storePassword 'ifoton-9526'
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            ndk{
+                //这里其实我觉可以直接是用"armeabi-v7a"，但国内几个大哥之前使用的都是"armeabi"
+                abiFilters "armeabi", "armeabi-v7a"
+            }
+            debuggable false
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
+        }
+        debug {
+            ndk {
+                //这里要加上，否则debug包会出问题,后面三个为可选，x86建议加上不然部分模拟器回报错
+                abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86"
+//                abiFilters "armeabi", "armeabi-v7a"
+            }
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //signingConfig signingConfigs.release
             signingConfig signingConfigs.debug
         }
     }
+
 }
 
 flutter {
@@ -60,4 +103,5 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.android.support:multidex:1.0.3'
 }

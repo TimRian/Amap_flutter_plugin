@@ -1,5 +1,6 @@
 import 'package:amap_special_example/location/location_page.dart';
 import 'package:amap_special_example/map/screen.dart';
+import 'package:amap_special_example/search/search.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -21,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initMapKey();
+//    initMapKey();
 //    initPlatformState();
   }
 
@@ -83,6 +84,14 @@ class _MyAppState extends State<MyApp> {
               onPressed: () {
                 Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
                   return new MapDemo();
+                }));
+              },
+            ),
+            RaisedButton(
+              child: Text('搜索'),
+              onPressed: () {
+                Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
+                  return new SearchDemo();
                 }));
               },
             ),

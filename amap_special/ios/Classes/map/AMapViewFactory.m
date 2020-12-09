@@ -11,6 +11,7 @@
 #import "NSString+Color.h"
 #import "FunctionRegistry.h"
 #import "MapHandlers.h"
+#import "CustomAnnotationView.h"
 
 static NSString *mapChannelName = @"foton/map";
 static NSString *markerClickedChannelName = @"foton/marker_clicked";
@@ -189,11 +190,15 @@ static NSString *regionWillChangeName = @"foton/regionWillChange";
     LatLng *center = [[LatLng alloc] init];
     center.latitude = mapView.centerCoordinate.latitude;
     center.longitude = mapView.centerCoordinate.longitude;
-    _eventMapDidChangeDelegateHandler.sinkDelegate(center.mj_JSONString);
+    if(_eventMapDidChangeDelegateHandler.sinkDelegate){
+        _eventMapDidChangeDelegateHandler.sinkDelegate(center.mj_JSONString);
+    }
 }
 
 - (void)mapView:(MAMapView *)mapView regionWillChangeAnimated:(BOOL)animated{
-    _eventMapWillChangeDelegateHandler.sinkDelegate(@"即将移动");
+    if(_eventMapWillChangeDelegateHandler.sinkDelegate){
+        _eventMapWillChangeDelegateHandler.sinkDelegate(@"即将移动");
+    }
 }
 
 /// 渲染overlay回调
@@ -246,11 +251,18 @@ static NSString *regionWillChangeName = @"foton/regionWillChange";
   if ([annotation isKindOfClass:[MAPointAnnotation class]]) {
     static NSString *routePlanningCellIdentifier = @"RoutePlanningCellIdentifier";
 
-    MAAnnotationView *annotationView = [_mapView dequeueReusableAnnotationViewWithIdentifier:routePlanningCellIdentifier];
-    if (annotationView == nil) {
-      annotationView = [[MAAnnotationView alloc] initWithAnnotation:annotation
-                                                    reuseIdentifier:routePlanningCellIdentifier];
-    }
+//    MAAnnotationView *annotationView = [_mapView dequeueReusableAnnotationViewWithIdentifier:routePlanningCellIdentifier];
+//    if (annotationView == nil) {
+//      annotationView = [[MAAnnotationView alloc] initWithAnnotation:annotation
+//                                                    reuseIdentifier:routePlanningCellIdentifier];
+//    }
+      
+      CustomAnnotationView *annotationView = (CustomAnnotationView*)[_mapView dequeueReusableAnnotationViewWithIdentifier:routePlanningCellIdentifier];
+      if (annotationView == nil) {
+          annotationView = [[CustomAnnotationView alloc] initWithAnnotation:annotation
+                                                            reuseIdentifier:routePlanningCellIdentifier];
+      }
+      
 
     if ([annotation isKindOfClass:[MarkerAnnotation class]]) {
       UnifiedMarkerOptions *options = ((MarkerAnnotation *) annotation).markerOptions;
@@ -265,9 +277,12 @@ static NSString *regionWillChangeName = @"foton/regionWillChange";
       annotationView.calloutOffset = CGPointMake(options.infoWindowOffsetX, options.infoWindowOffsetY);
       annotationView.draggable = options.draggable;
       annotationView.canShowCallout = options.infoWindowEnable;
+      annotationView.canShowCallout               = NO;
       annotationView.enabled = options.enabled;
       annotationView.highlighted = options.highlighted;
-      annotationView.selected = options.selected;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            annotationView.selected = options.selected;
+        });
     } else {
       if ([[annotation title] isEqualToString:@"起点"]) {
         annotationView.image = [UIImage imageWithContentsOfFile:[UnifiedAssets getDefaultAssetPath:@"images/amap_start.png"]];

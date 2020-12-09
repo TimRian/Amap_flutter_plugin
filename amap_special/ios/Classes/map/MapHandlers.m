@@ -372,7 +372,7 @@
                                                               options:kNilOptions
                                                                 error:nil];
     NSMutableArray<MarkerAnnotation *> *optionList = [NSMutableArray array];
-
+    
     for (NSUInteger i = 0; i < rawOptionsList.count; ++i) {
         UnifiedMarkerOptions *options = [UnifiedMarkerOptions mj_objectWithKeyValues:rawOptionsList[i]];
         MarkerAnnotation *annotation = [[MarkerAnnotation alloc] init];
@@ -380,12 +380,11 @@
         annotation.title = options.title;
         annotation.subtitle = options.snippet;
         annotation.markerOptions = options;
-
         [optionList addObject:annotation];
     }
 
     [_mapView addAnnotations:optionList];
-    if (moveToCenter) {
+    if (moveToCenter.boolValue) {
         [_mapView showAnnotations:optionList animated:YES];
     }
 

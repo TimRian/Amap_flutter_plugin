@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 #import "MAPointAnnotation.h"
 #import "MAPolyline.h"
+#import "MAMapKit.h"
 
 @class UnifiedMarkerOptions;
 @class LatLng;
@@ -113,6 +114,10 @@
 @property(nonatomic) NSString *snippet;
 /// Marker覆盖物 的标题
 @property(nonatomic) NSString *title;
+/// Marker覆盖物 的Vin码
+@property(nonatomic) NSString *allVin;
+/// Marker覆盖物 的title颜色
+@property(nonatomic) NSString *titleColor;
 /// Marker覆盖物 zIndex
 @property(nonatomic) CGFloat zIndex;
 /// 是否固定在屏幕一点, 注意，拖动或者手动改变经纬度，都会导致设置失效 [暂未实现]

@@ -4,8 +4,14 @@ import 'package:amap_special/amap_special.dart';
 import 'package:amap_special/src/common/misc.dart';
 import 'package:amap_special/src/map/model/latlng.dart';
 import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class MarkerOptions {
+
+  /// 字体颜色 [Android, iOS]
+  Color titleColor;
+
   /// Marker覆盖物的图标 [Android, iOS]
   String icon;
 
@@ -54,6 +60,9 @@ class MarkerOptions {
   /// Marker覆盖物的标题 [Android, iOS]
   String title;
 
+  /// MarkerAllVin vin码 [Android, iOS]
+  String allVin;
+
   /// Marker覆盖物是否可见 [Android]
   bool visible;
 
@@ -95,6 +104,7 @@ class MarkerOptions {
 
   MarkerOptions({
     @required this.position,
+    this.titleColor = Colors.black12,
     this.icon,
     this.icons = const [],
     this.alpha = 1,
@@ -110,6 +120,7 @@ class MarkerOptions {
     this.infoWindowOffsetY = 0,
     this.snippet = '',
     this.title = '',
+    this.allVin = '',
     this.visible = true,
     this.autoOverturnInfoWindow = false,
     this.zIndex = 0,
@@ -146,6 +157,8 @@ class MarkerOptions {
     rotateAngle = json['rotateAngle'] as num;
     snippet = json['snippet'] as String;
     title = json['title'] as String;
+    allVin = json['allVin'] as String;
+    titleColor = HexColor(json['titleColor']) as Color;
     visible = json['visible'] as bool;
     zIndex = json['zIndex'] as num;
   }
@@ -168,6 +181,8 @@ class MarkerOptions {
       'infoWindowOffsetY': infoWindowOffsetY,
       'snippet': snippet,
       'title': title,
+      'allVin': allVin,
+      'titleColor': titleColor.value.toRadixString(16),
       'visible': visible,
       'autoOverturnInfoWindow': autoOverturnInfoWindow,
       'zIndex': zIndex,
@@ -207,6 +222,8 @@ class MarkerOptions {
           infoWindowOffsetY == other.infoWindowOffsetY &&
           snippet == other.snippet &&
           title == other.title &&
+          allVin == other.allVin &&
+          titleColor == other.titleColor &&
           visible == other.visible &&
           autoOverturnInfoWindow == other.autoOverturnInfoWindow &&
           zIndex == other.zIndex &&
@@ -239,6 +256,8 @@ class MarkerOptions {
       infoWindowOffsetY.hashCode ^
       snippet.hashCode ^
       title.hashCode ^
+      allVin.hashCode ^
+      titleColor.hashCode ^
       visible.hashCode ^
       autoOverturnInfoWindow.hashCode ^
       zIndex.hashCode ^
@@ -255,6 +274,20 @@ class MarkerOptions {
 
   @override
   String toString() {
-    return 'MarkerOptions{icon: $icon, icons: $icons, alpha: $alpha, anchorU: $anchorU, anchorV: $anchorV, draggable: $draggable, infoWindowEnable: $infoWindowEnable, period: $period, position: $position, rotateAngle: $rotateAngle, isFlat: $isFlat, isGps: $isGps, infoWindowOffsetX: $infoWindowOffsetX, infoWindowOffsetY: $infoWindowOffsetY, snippet: $snippet, title: $title, visible: $visible, autoOverturnInfoWindow: $autoOverturnInfoWindow, zIndex: $zIndex, displayLevel: $displayLevel, belowMaskLayer: $belowMaskLayer, lockedToScreen: $lockedToScreen, lockedScreenPoint: $lockedScreenPoint, customCalloutView: $customCalloutView, enabled: $enabled, highlighted: $highlighted, selected: $selected, leftCalloutAccessoryView: $leftCalloutAccessoryView, rightCalloutAccessoryView: $rightCalloutAccessoryView}';
+    return 'MarkerOptions{icon: $icon, icons: $icons, alpha: $alpha, anchorU: $anchorU, anchorV: $anchorV, draggable: $draggable, infoWindowEnable: $infoWindowEnable, period: $period, position: $position, rotateAngle: $rotateAngle, isFlat: $isFlat, isGps: $isGps, infoWindowOffsetX: $infoWindowOffsetX, infoWindowOffsetY: $infoWindowOffsetY, snippet: $snippet, title: $title, allVin: $allVin, titleColor: $titleColor, visible: $visible, autoOverturnInfoWindow: $autoOverturnInfoWindow, zIndex: $zIndex, displayLevel: $displayLevel, belowMaskLayer: $belowMaskLayer, lockedToScreen: $lockedToScreen, lockedScreenPoint: $lockedScreenPoint, customCalloutView: $customCalloutView, enabled: $enabled, highlighted: $highlighted, selected: $selected, leftCalloutAccessoryView: $leftCalloutAccessoryView, rightCalloutAccessoryView: $rightCalloutAccessoryView}';
   }
 }
+
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    hexColor = hexColor.replaceAll('0X', '');
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+}
+

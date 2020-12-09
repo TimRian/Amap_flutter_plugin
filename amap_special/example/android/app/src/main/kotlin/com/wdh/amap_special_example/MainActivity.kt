@@ -1,6 +1,13 @@
 package com.wdh.amap_special_example
 
-import io.flutter.embedding.android.FlutterActivity
+import android.os.Bundle
 
-class MainActivity: FlutterActivity() {
+import io.flutter.app.FlutterActivity
+import io.flutter.plugins.GeneratedPluginRegistrant
+
+class MainActivity(): FlutterActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        GeneratedPluginRegistrant.registerWith(this)
+    }
 }

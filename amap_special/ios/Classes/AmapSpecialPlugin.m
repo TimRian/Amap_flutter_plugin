@@ -8,6 +8,10 @@
 #import "amap_special-Swift.h"
 #endif
 #import <AMapNaviKit/AMapNaviKit.h>
+#import <AMapLocationKit/AMapLocationKit.h>
+#import <AMapSearchKit/AMapSearchKit.h>
+#import <AMapFoundationKit/AMapFoundationKit.h>
+#import <MJExtension/MJExtension.h>
 #import "IMethodHandler.h"
 #import "FunctionRegistry.h"
 #import "AMapViewFactory.h"
@@ -66,6 +70,19 @@ static NSObject <FlutterPluginRegistrar> *_registrar;
             result(FlutterMethodNotImplemented);
         }
     }];
+    
+    
+    // 搜索channel
+    FlutterMethodChannel *searchChannel = [FlutterMethodChannel methodChannelWithName:@"foton/search" binaryMessenger:registrar.messenger];
+    [searchChannel setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
+        NSObject <SearchMethodHandler> *handler = [SearchFunctionRegistry searchMethodHandler][call.method];
+        if (handler) {
+            [[handler init] onMethodCall:call :result];
+        }else{
+            result(FlutterMethodNotImplemented);
+        }
+    }];
+    
     
     // MapView 
     [_registrar registerViewFactory:[[AMapViewFactory alloc] init] withId:@"foton/AMapView"];
