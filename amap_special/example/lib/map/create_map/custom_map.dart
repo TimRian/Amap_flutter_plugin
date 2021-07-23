@@ -28,8 +28,11 @@ class _CustomMapScreenState extends State<CustomMapScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.map),
         onPressed: () async {
-          await _controller?.setCustomMapStylePath('amap_assets/style.data');
-          await _controller?.setMapCustomEnable(true);
+          print(await _controller.getVisibleRegion().toString());
+          var r = await _controller.getVisibleRegion();
+          print(r.neLat);
+          // await _controller?.setCustomMapStylePath('amap_assets/style.data');
+          // await _controller?.setMapCustomEnable(true);
         },
       ),
     );

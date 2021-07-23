@@ -32,6 +32,13 @@
         
         if (self.calloutView == nil) {
             self.calloutView = [[CustomCalloutView alloc] initWithFrame:CGRectMake(0, 0, 80, 38)];
+            
+            if (_model.title.length == 0) {
+                self.calloutView.frame = CGRectMake(0, 0, 0, 0);
+            }else{
+                self.calloutView.frame = CGRectMake(0, 0, 80, 38);
+            }
+            
             self.calloutView.center = CGPointMake(CGRectGetWidth(self.bounds) / 2.f + self.calloutOffset.x,
                        -CGRectGetHeight(self.calloutView.bounds) / 2.f + self.calloutOffset.y);
         }
@@ -41,7 +48,7 @@
         [self addSubview:self.calloutView];
         
     }else{
-        [self.calloutView removeFromSuperview];
+//        [self.calloutView removeFromSuperview];
     }
     [super setSelected:selected animated:animated];
 }

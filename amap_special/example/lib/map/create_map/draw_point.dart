@@ -46,9 +46,9 @@ class DrawPointScreenState extends State<DrawPointScreen> {
                       .map((latLng) => MarkerOptions(
                     icon: 'images/home_map_icon_positioning_nor.png',
                     position: latLng,
-                    title: '京A123456',
+                    title: 'ff',
                     snippet: '呵呵',
-                    infoWindowEnable: false,
+                    infoWindowEnable: true,
                     selected: true,
                     titleColor: Color(0XFF991299),
                     allVin: 'VH124K89434343'

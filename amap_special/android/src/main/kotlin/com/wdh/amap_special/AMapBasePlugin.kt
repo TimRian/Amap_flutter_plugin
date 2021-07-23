@@ -83,6 +83,11 @@ class AMapBasePlugin {
                         MAP_METHOD_HANDLER[call.method]
                                 ?.onMethodCall(call, result) ?: result.notImplemented()
                     }
+//            MethodChannel(registrar.messenger(), "foton/map")
+//                    .setMethodCallHandler { call, result ->
+//                        MAP_METHOD_HANDLER[call.method]
+//                                ?.onMethodCall(call, result) ?: result.notImplemented()
+//                    }
 
             // 离线地图 channel
             MethodChannel(registrar.messenger(), "foton/offline")

@@ -1,3 +1,3 @@
-## 0.0.5(add some methods)
+## 0.0.12(add some methods)
 
 * TODO: Describe initial release.

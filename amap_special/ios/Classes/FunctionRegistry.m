@@ -29,6 +29,7 @@ static NSDictionary<NSString *, NSObject <MapMethodHandler> *> *_mapDictionary;
                 @"map#setZoomLevel": [SetZoomLevel alloc],
                 @"map#setPosition": [SetPosition alloc],
                 @"map#setMapStatusLimits": [SetMapStatusLimits alloc],
+                @"map#getVisibleRegion": [GetVisibleRegion alloc],
                 @"tool#convertCoordinate": [ConvertCoordinate alloc],
                 @"offline#openOfflineManager": [OpenOfflineManager alloc],
                 @"map#addPolyline": [AddPolyline alloc],

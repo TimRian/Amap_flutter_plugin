@@ -1,11 +1,11 @@
 name: amap_special
 description: A new flutter plugin project for Amap.
-version: 0.0.5
+version: 0.0.12
 homepage: https://github.com/TimRian/Amap_flutter_plugin
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.20.0 <2.0.0"
+  flutter: ">=1.20.0"
 
 dependencies:
   flutter:

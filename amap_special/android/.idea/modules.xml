@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/amap_special.iml" filepath="$PROJECT_DIR$/amap_special.iml" group="amap_special" />
+      <module fileurl="file://$PROJECT_DIR$/amap_special.iml" filepath="$PROJECT_DIR$/amap_special.iml" />
     </modules>
   </component>
 </project>

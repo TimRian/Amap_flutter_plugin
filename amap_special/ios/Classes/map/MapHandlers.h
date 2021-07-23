@@ -39,6 +39,9 @@
 @interface SetMapType : NSObject<MapMethodHandler>
 @end
 
+@interface GetVisibleRegion : NSObject<MapMethodHandler>
+@end
+
 
 @interface SetMyLocationStyle : NSObject<MapMethodHandler>
 @end

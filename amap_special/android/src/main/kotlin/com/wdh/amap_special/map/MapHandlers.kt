@@ -2,13 +2,9 @@ package com.wdh.amap_special.map
 
 import android.content.Intent
 import android.graphics.Bitmap
-import com.amap.api.maps.AMap
-import com.amap.api.maps.AMapUtils
-import com.amap.api.maps.CameraUpdateFactory
-import com.amap.api.maps.CoordinateConverter
-import com.amap.api.maps.model.CameraPosition
-import com.amap.api.maps.model.LatLng
-import com.amap.api.maps.model.LatLngBounds
+import android.graphics.Color
+import com.amap.api.maps.*
+import com.amap.api.maps.model.*
 import com.amap.api.maps.offlinemap.OfflineMapActivity
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -18,6 +14,7 @@ import com.wdh.amap_special.MapMethodHandler
 import com.wdh.amap_special.common.log
 import com.wdh.amap_special.common.parseFieldJson
 import com.wdh.amap_special.common.toFieldJson
+import org.json.JSONObject
 import java.io.*
 import java.util.*
 
@@ -334,7 +331,43 @@ object AddMarkers : MapMethodHandler {
 
         val optionsList = ArrayList(optionsListJson.parseFieldJson<List<UnifiedMarkerOptions>>().map { it.toMarkerOption() })
         if (clear) map.mapScreenMarkers.forEach { it.remove() }
-        map.addMarkers(optionsList, moveToCenter)
+        val markerList = map.addMarkers(optionsList, moveToCenter)
+//        if (markerList!=null){
+//            for (item in markerList){
+//                item.showInfoWindow()
+//            }
+//        }
+        result.success(success)
+    }
+}
+
+object AddCircle : MapMethodHandler {
+
+    lateinit var map: AMap
+
+    override fun with(map: AMap): AddCircle {
+        this.map = map
+        return this
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        val optionStr = call.argument<String>("options") ?: "{}"
+        val obj = JSONObject(optionStr)
+        val options = CircleOptions()
+        options.strokeWidth(obj.getString("width").toFloat())
+        options.fillColor(Color.argb(10, 0, 0, 180))
+        options.strokeColor(Color.argb(180, 3, 145, 255))
+//        if (obj.getString("fillColor")!=null){
+//            options.fillColor(Color.parseColor(obj.getString("fillColor")))
+//        }
+//        if (obj.getString("strokeColor")!=null){
+//            options.strokeColor(Color.parseColor(obj.getString("strokeColor")))
+//        }
+        options.center(LatLng(obj.getJSONObject("position").getDouble("latitude"), obj.getJSONObject("position").getDouble("longitude")))
+        options.radius(obj.getDouble("radius"))
+
+        map.clear()
+        map.addCircle(options)
 
         result.success(success)
     }
@@ -422,6 +455,24 @@ object SetMapStatusLimits : MapMethodHandler {
         map.setMapStatusLimits(LatLngBounds(swLatLng, neLatLng))
 
         methodResult.success(success)
+    }
+}
+
+object getVisibleRegion : MapMethodHandler {
+
+    lateinit var map: AMap
+
+    override fun with(map: AMap): getVisibleRegion {
+        this.map = map
+        return this
+    }
+
+    override fun onMethodCall(methodCall: MethodCall, methodResult: MethodChannel.Result){
+        val projection: Projection = map.getProjection()
+        val visibleRegion: VisibleRegion = projection.getVisibleRegion() //可视区域四个角的坐标
+
+        methodResult.success(visibleRegion.toFieldJson())
+
     }
 }
 

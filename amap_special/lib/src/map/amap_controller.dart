@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:amap_special/src/common/log.dart';
 import 'package:amap_special/src/map/model/circle_options.dart';
@@ -12,17 +13,23 @@ import 'package:flutter/services.dart';
 
 import 'package:amap_special/amap_special.dart';
 
+import 'model/VisibleRegion.dart';
+
 class AMapController{
   final MethodChannel _mapChannel;
   final EventChannel _markerClickedEventChannel;
   final EventChannel _regionDidChangeEventChannel;
   final EventChannel _regionWillChangeEventChannel;
+  final EventChannel _mapDidZoomByUserChannel;
+  final EventChannel _mapDidMoveByUserChannel;
 
   AMapController.withId(int id)
       : _mapChannel = MethodChannel('foton/map$id'),
         _markerClickedEventChannel = EventChannel('foton/marker_clicked$id'),
         _regionDidChangeEventChannel = EventChannel('foton/regionDidChange$id'),
-        _regionWillChangeEventChannel = EventChannel('foton/regionWillChange$id')
+        _regionWillChangeEventChannel = EventChannel('foton/regionWillChange$id'),
+        _mapDidZoomByUserChannel = EventChannel('foton/mapDidZoomByUser$id'),
+        _mapDidMoveByUserChannel = EventChannel('foton/mapDidMoveByUser$id')
   ;
 
   void dispose() {}
@@ -233,6 +240,16 @@ class AMapController{
     return LatLng.fromJson(json.decode(result));
   }
 
+  /// 获取可视区域四个角的坐标
+  Future<VisibleRegion> getVisibleRegion() async {
+    String result = await _mapChannel.invokeMethod("map#getVisibleRegion");
+    print(json.decode(result));
+    return VisibleRegion.fromJson(json.decode(result));
+  }
+
+
+  /// TODO 显示infowindow
+
 
   /// 截图
   ///
@@ -289,12 +306,21 @@ class AMapController{
   /// marker点击事件流  来自native消息的接收
   Stream<MarkerOptions> get markerClickedEvent => _markerClickedEventChannel
       .receiveBroadcastStream()
-      .map((data) => MarkerOptions.fromJson(jsonDecode(data)));
+      .map((data) {
+        print(data);
+        return MarkerOptions.fromJson(jsonDecode(data));
+      });
 
   /// 地图移动后的回调
   Stream<LatLng> get regionDidChangeEvent => _regionDidChangeEventChannel.receiveBroadcastStream().map((data) => LatLng.fromJson(jsonDecode(data)));
 
   /// 地图即将移动的回调
   Stream<String> get regionWillChangeEvent => _regionWillChangeEventChannel.receiveBroadcastStream().map((data) => data);
+
+  /// 地图手动拖动
+  Stream<LatLng> get mapDidMoveByUserEvent => _mapDidMoveByUserChannel.receiveBroadcastStream().map((data) => LatLng.fromJson(jsonDecode(data)));
+
+  /// 地图手动缩放
+  Stream<LatLng> get mapDidZoomByUserEvent => _mapDidZoomByUserChannel.receiveBroadcastStream().map((data) => LatLng.fromJson(jsonDecode(data)));
 
 }

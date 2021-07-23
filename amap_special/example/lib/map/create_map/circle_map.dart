@@ -62,7 +62,7 @@ class DrawCircleScreenState extends State<DrawCircleScreen> {
                   CircleOptions(
                       position: LatLng(39, 116),
                     alpha: 0.1,
-                    width: 1.0,
+                    width: 2.0,
                     radius: 5000,
                     fillColor: Colors.blue,
                     strokeColor: Colors.blue,
@@ -76,30 +76,40 @@ class DrawCircleScreenState extends State<DrawCircleScreen> {
                     .showSnackBar(SnackBar(content: Text(marker.toString())));
               });
 
-               _controller.regionDidChangeEvent.listen((event) async{
-                 Scaffold.of(context)
-                    .showSnackBar(SnackBar(content: Text(event.toJsonString())));
+               // _controller.regionDidChangeEvent.listen((event) async{
+               //   Scaffold.of(context)
+               //      .showSnackBar(SnackBar(content: Text(event.toJsonString())));
+               //
+               //   //画随机圆
+               //   final nextLatLng = event;
+               //   await _controller.addCircle(
+               //     CircleOptions(
+               //       position: nextLatLng,
+               //       alpha: 0.1,
+               //       width: 2.0,
+               //       radius: 5000,
+               //       fillColor: Colors.blue,
+               //       strokeColor: Colors.blue,
+               //     ),
+               //   );
+               //
+               // });
+               //
+               // _controller.regionWillChangeEvent.listen((event) {
+               //   Scaffold.of(context)
+               //       .showSnackBar(SnackBar(content: Text(event)));
+               //   _controller.clearMap();
+               // });
 
-                 //画随机圆
-                 final nextLatLng = event;
-                 await _controller.addCircle(
-                   CircleOptions(
-                     position: nextLatLng,
-                     alpha: 0.1,
-                     width: 1.0,
-                     radius: 5000,
-                     fillColor: Colors.blue,
-                     strokeColor: Colors.blue,
-                   ),
-                 );
+              _controller.mapDidMoveByUserEvent.listen((event) async{
+                Scaffold.of(context)
+                    .showSnackBar(SnackBar(content: Text("mapDidMoveByUserEvent" + event.toJsonString())));
+              });
 
-               });
-
-               _controller.regionWillChangeEvent.listen((event) {
-                 Scaffold.of(context)
-                     .showSnackBar(SnackBar(content: Text(event)));
-                 _controller.clearMap();
-               });
+              _controller.mapDidZoomByUserEvent.listen((event) async{
+                Scaffold.of(context)
+                    .showSnackBar(SnackBar(content: Text("mapDidZoomByUserEvent" + event.toJsonString())));
+              });
             },
             ampOptions: AMapOptions(
               compassEnabled: true,
@@ -123,7 +133,7 @@ class DrawCircleScreenState extends State<DrawCircleScreen> {
             CircleOptions(
               position: nextLatLng,
               alpha: 0.1,
-              width: 1.0,
+              width: 2.0,
               radius: 5000,
               fillColor: Colors.blue,
               strokeColor: Colors.blue,

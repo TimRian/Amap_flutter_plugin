@@ -246,8 +246,6 @@
     // 由于iOS端是从0开始算的, 所以这里减去1
     NSInteger mapType = [paramDic[@"mapType"] integerValue] - 1;
 
-    NSLog(@"方法map#setMapType ios端参数: mapType -> %d", mapType);
-
     [_mapView setMapType:(MAMapType) mapType];
 
     result(success);
@@ -524,6 +522,77 @@
     ];
 
     result(success);
+}
+
+@end
+
+
+// 获得对角经纬度
+@implementation GetVisibleRegion {
+    MAMapView *_mapView;
+}
+- (NSObject <MapMethodHandler> *)initWith:(MAMapView *)mapView {
+    _mapView = mapView;
+    return self;
+}
+
+- (void)onMethodCall:(FlutterMethodCall *)call :(FlutterResult)result {
+
+    int ww = ([[UIScreen mainScreen] bounds].size.width);
+    int wh = ([[UIScreen mainScreen] bounds].size.height);
+    CGPoint nePoint=CGPointMake(ww, 90);
+    CGPoint swPoint=CGPointMake(0, wh);
+    CLLocationCoordinate2D sw=[_mapView convertPoint:swPoint toCoordinateFromView:_mapView.superview];
+    CLLocationCoordinate2D ne=[_mapView convertPoint:nePoint toCoordinateFromView:_mapView.superview];
+
+//    NSDictionary *swDic=BMKConvertBaiduCoorFrom(sw, BMK_COORDTYPE_COMMON);
+//    CLLocationCoordinate2D baiduSW=BMKCoorDictionaryDecode(swDic);//左下角
+//
+//    NSDictionary *neDic=BMKConvertBaiduCoorFrom(ne, BMK_COORDTYPE_COMMON);
+//    CLLocationCoordinate2D baiduNE=BMKCoorDictionaryDecode(neDic);//右上角
+//
+//    NSDictionary *paramDic=@{@"swLon":baiduSW.longitude,
+//                             @"swLat":baiduSW.latitude,
+//                             @"neLon":baiduNE.longitude,
+//                             @"neLat":baiduNE.latitude};
+    
+//    NSDictionary *paramDic=@{@"swLon":@(sw.longitude),
+//                             @"swLat":@(sw.latitude),
+//                             @"neLon":@(ne.longitude),
+//                             @"neLat":@(ne.latitude)};
+
+    
+    CLLocationCoordinate2D sw_bd = [self gaodeToBdWithLat:sw];
+    CLLocationCoordinate2D ne_bd = [self gaodeToBdWithLat:ne];
+    
+    NSString *_swLng=[NSString stringWithFormat:@"%lf",sw_bd.longitude];
+    NSString *_swLat=[NSString stringWithFormat:@"%lf",sw_bd.latitude];
+    NSString *_neLng=[NSString stringWithFormat:@"%lf",ne_bd.longitude];
+    NSString *_neLat=[NSString stringWithFormat:@"%lf",ne_bd.latitude];
+    NSDictionary *paramDic=@{@"swLon":_swLng,
+                             @"swLat":_swLat,
+                             @"neLon":_neLng,
+                             @"neLat":_neLat};
+
+    result([paramDic mj_JSONString]);
+}
+
+//高德转百度
+-(CLLocationCoordinate2D)gaodeToBdWithLat:(CLLocationCoordinate2D)coordinate{
+    
+    double x = coordinate.longitude;
+    double y = coordinate.latitude;
+    
+    double x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+
+    double z = sqrt(x * x + y * y) + 0.00002 * sin(y * x_pi);
+    double theta = atan2(y, x) + 0.000003 * cos(x * x_pi);
+    double tempLon = z * cos(theta) + 0.0065;
+    double tempLat = z * sin(theta) + 0.006;
+    
+    CLLocationCoordinate2D coo = CLLocationCoordinate2DMake(tempLat, tempLon);
+    
+    return coo;
 }
 
 @end

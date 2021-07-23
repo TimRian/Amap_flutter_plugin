@@ -17,6 +17,8 @@ static NSString *mapChannelName = @"foton/map";
 static NSString *markerClickedChannelName = @"foton/marker_clicked";
 static NSString *regionDidChangeName = @"foton/regionDidChange";
 static NSString *regionWillChangeName = @"foton/regionWillChange";
+static NSString *mapDidZoomByUserName = @"foton/mapDidZoomByUser";
+static NSString *mapDidMoveByUserName = @"foton/mapDidMoveByUser";
 
 @interface MarkerEventHandler : NSObject <FlutterStreamHandler>
 @property(nonatomic) FlutterEventSink sink;
@@ -86,10 +88,14 @@ static NSString *regionWillChangeName = @"foton/regionWillChange";
   FlutterEventChannel *_markerClickedEventChannel;
   FlutterEventChannel *_regionDidChangeEventChannel;
   FlutterEventChannel *_regionWillChangeEventChannel;
+  FlutterEventChannel *_mapDidZoomByUserEventChannel;
+  FlutterEventChannel *_mapDidMoveByUserEventChannel;
   MAMapView *_mapView;
   MarkerEventHandler *_eventHandler;
   MapDelegateEventHandler *_eventMapDidChangeDelegateHandler;
   MapDelegateEventHandler *_eventMapWillChangeDelegateHandler;
+  MapDelegateEventHandler *_eventMapDidZoomByUserDelegateHandler;
+  MapDelegateEventHandler *_eventMapDidMoveByUserDelegateHandler;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -172,6 +178,20 @@ static NSString *regionWillChangeName = @"foton/regionWillChange";
     _regionWillChangeEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@%lld", regionWillChangeName, _viewId]
                                                               binaryMessenger:[AmapSpecialPlugin registrar].messenger];
     [_regionWillChangeEventChannel setStreamHandler:_eventMapWillChangeDelegateHandler];
+
+    /// 地图手动拖动
+    _eventMapDidMoveByUserDelegateHandler = [[MapDelegateEventHandler alloc] init];
+    _mapDidMoveByUserEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@%lld", mapDidMoveByUserName, _viewId]
+                                                             binaryMessenger:[AmapSpecialPlugin registrar].messenger];
+    
+    [_mapDidMoveByUserEventChannel setStreamHandler:_eventMapDidMoveByUserDelegateHandler];
+
+    /// 地图手动缩放
+    _eventMapDidZoomByUserDelegateHandler = [[MapDelegateEventHandler alloc] init];
+    _mapDidZoomByUserEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@%lld", mapDidZoomByUserName, _viewId]
+                                                             binaryMessenger:[AmapSpecialPlugin registrar].messenger];
+    
+    [_mapDidZoomByUserEventChannel setStreamHandler:_eventMapDidZoomByUserDelegateHandler];
 }
 
 #pragma MAMapViewDelegate
@@ -180,7 +200,9 @@ static NSString *regionWillChangeName = @"foton/regionWillChange";
 - (void)mapView:(MAMapView *)mapView didSelectAnnotationView:(MAAnnotationView *)view {
   if ([view.annotation isKindOfClass:[MarkerAnnotation class]]) {
     MarkerAnnotation *annotation = (MarkerAnnotation *) view.annotation;
-    _eventHandler.sink([annotation.markerOptions mj_JSONString]);
+      if(_eventHandler.sink){
+          _eventHandler.sink([annotation.markerOptions mj_JSONString]);
+      }
   }
 }
 
@@ -198,6 +220,27 @@ static NSString *regionWillChangeName = @"foton/regionWillChange";
 - (void)mapView:(MAMapView *)mapView regionWillChangeAnimated:(BOOL)animated{
     if(_eventMapWillChangeDelegateHandler.sinkDelegate){
         _eventMapWillChangeDelegateHandler.sinkDelegate(@"即将移动");
+    }
+}
+
+- (void)mapView:(MAMapView *)mapView mapDidZoomByUser:(BOOL)wasUserAction{
+    if (wasUserAction) {
+        LatLng *center = [[LatLng alloc] init];
+        center.latitude = mapView.centerCoordinate.latitude;
+        center.longitude = mapView.centerCoordinate.longitude;
+        if(_eventMapDidZoomByUserDelegateHandler.sinkDelegate){
+            _eventMapDidZoomByUserDelegateHandler.sinkDelegate(center.mj_JSONString);
+        }
+    }
+}
+- (void)mapView:(MAMapView *)mapView mapDidMoveByUser:(BOOL)wasUserAction{
+    if (wasUserAction) {
+        LatLng *center = [[LatLng alloc] init];
+        center.latitude = mapView.centerCoordinate.latitude;
+        center.longitude = mapView.centerCoordinate.longitude;
+        if(_eventMapDidMoveByUserDelegateHandler.sinkDelegate){
+            _eventMapDidMoveByUserDelegateHandler.sinkDelegate(center.mj_JSONString);
+        }
     }
 }
 
@@ -276,7 +319,7 @@ static NSString *regionWillChangeName = @"foton/regionWillChange";
       annotationView.centerOffset = CGPointMake(options.anchorU, options.anchorV);
       annotationView.calloutOffset = CGPointMake(options.infoWindowOffsetX, options.infoWindowOffsetY);
       annotationView.draggable = options.draggable;
-      annotationView.canShowCallout = options.infoWindowEnable;
+//      annotationView.canShowCallout = options.infoWindowEnable;
       annotationView.canShowCallout               = NO;
       annotationView.enabled = options.enabled;
       annotationView.highlighted = options.highlighted;

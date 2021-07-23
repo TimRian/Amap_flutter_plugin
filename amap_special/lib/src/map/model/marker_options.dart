@@ -157,8 +157,12 @@ class MarkerOptions {
     rotateAngle = json['rotateAngle'] as num;
     snippet = json['snippet'] as String;
     title = json['title'] as String;
-    allVin = json['allVin'] as String;
-    titleColor = HexColor(json['titleColor']) as Color;
+    if(json.containsKey("allVin")){
+      allVin = json['allVin'] as String;
+    }
+    if(json.containsKey("titleColor")){
+      titleColor = HexColor(json['titleColor']) as Color;
+    }
     visible = json['visible'] as bool;
     zIndex = json['zIndex'] as num;
   }

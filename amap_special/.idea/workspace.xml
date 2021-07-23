@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AndroidLayouts">
-    <shared>
-      <config />
-    </shared>
-  </component>
   <component name="AndroidLogFilters">
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="1246be33-c3fe-4f49-9739-22200b41ddf1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_API_28" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -35,6 +27,10 @@
   </component>
   <component name="ProjectId" id="1kOqYtK6gyNtSYwWKxFNKBgUU44" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
@@ -42,78 +38,20 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1603789759997" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/example/android/app/src/main/java/io/flutter/plugins" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/src/map" />
     <property name="settings.editor.selected.configurable" value="flutter.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib/src/map" />
       <recent name="$PROJECT_DIR$/example/android/app/src/main/java/io/flutter/plugins" />
       <recent name="$PROJECT_DIR$/android/src/main/kotlin/com/wdh/amap_special" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
-  <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="amap_special_android" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="WORKING_DIRECTORY" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="amap_special_android" />
-      <option name="filePath" />
-      <option name="vmParameters" />
-      <option name="alternativeJrePath" />
-      <option name="programParameters" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" />
-      <option name="isAlternativeJrePathEnabled" value="false" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="WORKING_DIRECTORY" />
-      <option name="filePath" />
-      <option name="vmParameters" />
-      <option name="alternativeJrePath" />
-      <option name="programParameters" />
-      <option name="passParentEnvs" value="true" />
-      <option name="workingDirectory" />
-      <option name="isAlternativeJrePathEnabled" value="false" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="WORKING_DIRECTORY" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -151,12 +89,50 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="606" y="180" key="#com.intellij.ide.util.MemberChooser" timestamp="1622446892595">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="606" y="180" key="#com.intellij.ide.util.MemberChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1622446892595" />
+    <state width="359" height="466" key="DebuggerActiveHint" timestamp="1623825675981">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="359" height="466" key="DebuggerActiveHint/0.25.1440.875@0.25.1440.875" timestamp="1623825675981" />
+    <state width="1433" height="186" key="GridCell.Tab.0.bottom" timestamp="1626948088339">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1628" height="265" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1622512520306" />
+    <state width="1433" height="186" key="GridCell.Tab.0.bottom/0.25.1440.875@0.25.1440.875" timestamp="1626948088339" />
+    <state width="1433" height="186" key="GridCell.Tab.0.center" timestamp="1626948088338">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1628" height="265" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1622512520305" />
+    <state width="1433" height="186" key="GridCell.Tab.0.center/0.25.1440.875@0.25.1440.875" timestamp="1626948088338" />
+    <state width="1433" height="186" key="GridCell.Tab.0.left" timestamp="1626948088338">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1628" height="265" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1622512520305" />
+    <state width="1433" height="186" key="GridCell.Tab.0.left/0.25.1440.875@0.25.1440.875" timestamp="1626948088338" />
+    <state width="1433" height="186" key="GridCell.Tab.0.right" timestamp="1626948088338">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1628" height="265" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1622512520306" />
+    <state width="1433" height="186" key="GridCell.Tab.0.right/0.25.1440.875@0.25.1440.875" timestamp="1626948088338" />
+    <state x="394" y="216" width="697" height="494" key="find.popup" timestamp="1627003403279">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state x="460" y="229" width="759" height="592" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1622511705329" />
+    <state x="394" y="216" width="697" height="494" key="find.popup/0.25.1440.875@0.25.1440.875" timestamp="1627003403279" />
+    <state width="435" height="63" key="javadoc.popup.new" timestamp="1627003398606">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="435" height="63" key="javadoc.popup.new/0.25.1440.875@0.25.1440.875" timestamp="1627003398606" />
   </component>
 </project>
