@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Running on: 13\n'),
-            RaisedButton(
+            TextButton(
               child: Text('开始导航'),
               onPressed: () {
                 AMapNavi().startNavi(

@@ -16,6 +16,11 @@ static AMapLocationManager *_locationManager;
     self = [super init];
     if (self) {
         _locationManager = [[AMapLocationManager alloc] init];
+        if (@available(iOS 14.0, *)) {
+            _locationManager.locationAccuracyMode = AMapLocationFullAndReduceAccuracy;
+        } else {
+            // Fallback on earlier versions
+        }
     }
 
     return self;
@@ -53,6 +58,16 @@ static AMapLocationManager *_locationManager;
     NSString *optionJson = params[@"options"];
 
     NSLog(@"startLocate ios端: options.toJsonString() -> %@", optionJson);
+    
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
+        //定位不能用
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"温馨提示" message:@"\n定位未开启！为了更好的体验，请到【设置->隐私->定位服务】中开启！"
+             delegate:self cancelButtonTitle:@"知道了" otherButtonTitles: nil];
+        [alert show];
+        result(@"定位未开启");
+        return;
+    }
+    
 
     UnifiedLocationClientOptions *options = [UnifiedLocationClientOptions mj_objectWithKeyValues:optionJson];
 
@@ -97,6 +112,32 @@ static AMapLocationManager *_locationManager;
 
 - (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
     return nil;
+}
+
+- (void)amapLocationManager:(AMapLocationManager *)manager doRequireLocationAuth:(CLLocationManager*)locationManager{
+    [locationManager requestAlwaysAuthorization];
+}
+
+- (void)amapLocationManager:(AMapLocationManager *)manager doRequireTemporaryFullAccuracyAuth:(CLLocationManager*)locationManager completion:(void(^)(NSError *error))completion
+{
+    // 通过字段判断可以明确当前用户开启的定位，如果是模糊定位
+    // 申请精准定位
+    if (@available(iOS 14.0, *)) {
+        if(manager.currentAuthorization == CLAccuracyAuthorizationReducedAccuracy){
+            // -1
+            [locationManager requestTemporaryFullAccuracyAuthorizationWithPurposeKey:@"purposeKeyGetLocation" completion:^(NSError * _Nullable error) {
+                NSLog(@"%@", [NSString stringWithFormat:@"requestTemporaryFullAccuracyAuthorizationWithPurposeKey error%@",error]);
+                if(completion){
+                    completion(error);
+                }
+            }];
+        } else {
+            // Fallback on earlier versions
+            NSLog(@"定位失败");
+        }
+    } else {
+        // Fallback on earlier versions
+    }
 }
 
 @end

@@ -22,7 +22,7 @@ val MAP_METHOD_HANDLER: Map<String, MapMethodHandler> = mapOf(
         "map#setLanguage" to SetLanguage,
         "map#clear" to ClearMap,
         "map#setZoomLevel" to SetZoomLevel,
-        "map#setPosition" to SetPosition,
+        "map#setMapCenter" to SetMapCenter,
         "map#setMapStatusLimits" to SetMapStatusLimits,
         "map#getVisibleRegion" to getVisibleRegion,
         "tool#convertCoordinate" to ConvertCoordinate,
@@ -34,8 +34,11 @@ val MAP_METHOD_HANDLER: Map<String, MapMethodHandler> = mapOf(
         "map#setCustomMapStylePath" to SetCustomMapStylePath,
         "map#setMapCustomEnable" to SetMapCustomEnable,
         "map#setCustomMapStyleID" to SetCustomMapStyleID,
+        "map#setCustomMapStyleOptions" to SetCustomMapStyleOptions,
         "map#getCenterPoint" to GetCenterLnglat,
-        "map#changeLatLng" to ChangeLatLng
+        "map#changeLatLng" to ChangeLatLng,
+        "marker#addMoveAnimation" to addMoveAnimation,
+        "tool#processedTrace" to lBSTraceClient
 )
 
 /**

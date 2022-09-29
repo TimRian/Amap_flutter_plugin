@@ -32,5 +32,6 @@
             android:screenOrientation="portrait"  />
 
         <service android:name="com.amap.api.location.APSService"/>
+        <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>
 </manifest>

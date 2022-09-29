@@ -6,6 +6,7 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
+import com.amap.api.location.AMapLocationClient
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import com.wdh.amap_special.LOCATION_METHOD_HANDLER
@@ -25,7 +26,7 @@ class AMapBasePlugin {
 
         lateinit var registrar: Registrar
         private var registrarActivityHashCode: Int = 0
-        private val activityState = AtomicInteger(0)
+        val activityState = AtomicInteger(0)
 
         // 权限请求的相关变量
         private var permissionRequestCode = 0
@@ -39,7 +40,7 @@ class AMapBasePlugin {
 
             // 注册生命周期回调, 保证地图初始化的时候对应的是正确的activity状态
             registrar.activity().application.registerActivityLifecycleCallbacks(this)
-
+         
             // 设置权限 channel
             MethodChannel(registrar.messenger(), "foton/permission")
                     .setMethodCallHandler { methodCall, result ->
@@ -54,7 +55,7 @@ class AMapBasePlugin {
                                                 Manifest.permission.ACCESS_FINE_LOCATION,
                                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                                                Manifest.permission.READ_PHONE_STATE),
+                                                    Manifest.permission.READ_PHONE_STATE),
                                         permissionRequestCode
                                 )
                                 registrar.addRequestPermissionsResultListener { code, _, grantResults ->
@@ -116,7 +117,8 @@ class AMapBasePlugin {
                         LOCATION_METHOD_HANDLER[call.method]
                                 ?.onMethodCall(call, result) ?: result.notImplemented()
                     }
-
+            AMapLocationClient.updatePrivacyShow(registrar.activity(),true,true)
+            AMapLocationClient.updatePrivacyAgree(registrar.activity(),true)
             // MapView
             registrar
                     .platformViewRegistry()
@@ -156,7 +158,7 @@ class AMapBasePlugin {
             activityState.set(STOPPED)
         }
 
-        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {}
+        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 
         override fun onActivityDestroyed(activity: Activity) {
             if (activity.hashCode() != registrarActivityHashCode) {

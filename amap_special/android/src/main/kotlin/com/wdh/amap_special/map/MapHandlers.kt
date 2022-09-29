@@ -6,20 +6,28 @@ import android.graphics.Color
 import com.amap.api.maps.*
 import com.amap.api.maps.model.*
 import com.amap.api.maps.offlinemap.OfflineMapActivity
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
+import com.amap.api.maps.utils.overlay.SmoothMoveMarker
+import com.amap.api.trace.LBSTraceClient
+import com.amap.api.trace.TraceListener
+import com.amap.api.trace.TraceLocation
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonParser
 import com.wdh.amap_special.AMapBasePlugin
 import com.wdh.amap_special.AMapBasePlugin.Companion.registrar
 import com.wdh.amap_special.MapMethodHandler
 import com.wdh.amap_special.common.log
 import com.wdh.amap_special.common.parseFieldJson
 import com.wdh.amap_special.common.toFieldJson
+import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 import org.json.JSONObject
 import java.io.*
 import java.util.*
 
 val beijingLatLng = LatLng(39.941711, 116.382248)
-
+var isAnimated = false
 object SetCustomMapStyleID : MapMethodHandler {
     private lateinit var map: AMap
 
@@ -34,6 +42,63 @@ object SetCustomMapStyleID : MapMethodHandler {
         log("方法map#setCustomMapStyleID android端参数: styleId -> $styleId")
 
         map.setCustomMapStyleID(styleId)
+
+        result.success(success)
+    }
+}
+
+object SetCustomMapStyleOptions : MapMethodHandler {
+    private lateinit var map: AMap
+
+    override fun with(map: AMap): MapMethodHandler {
+        this.map = map
+        return this
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+
+        val styleId = call.argument("styleId") ?: ""
+        val stylePath = call.argument("stylePath") ?: ""
+        val extraStylePath = call.argument("extraStylePath") ?: ""
+
+        log("方法map#SetCustomMapStyleOptions android端参数: styleId -> $styleId stylePath-> $stylePath extraStylePath-> $extraStylePath")
+
+        val path = UnifiedAssets.getDefaultPath(stylePath)
+        val pathExtra = UnifiedAssets.getDefaultPath(extraStylePath)
+
+        log("方法map#SetCustomMapStyleOptions android端参数: path -> $path pathExtra-> $pathExtra")
+
+
+        var buffer1: ByteArray? = null
+        var buffer2: ByteArray? = null
+        var is1: InputStream? = null
+        var is2: InputStream? = null
+        try {
+            is1 = AMapBasePlugin.registrar.activity().getAssets().open(path)
+            val lenght1 = is1.available()
+            buffer1 = ByteArray(lenght1)
+            is1.read(buffer1)
+            is2 = AMapBasePlugin.registrar.activity().getAssets().open(pathExtra)
+            val lenght2 = is2.available()
+            buffer2 = ByteArray(lenght2)
+            is2.read(buffer2)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                is1?.close()
+                is2?.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        map.setCustomMapStyle(CustomMapStyleOptions()
+            .setEnable(true)
+            .setStyleId(styleId)
+            .setStyleData(buffer1)
+            .setStyleExtraData(buffer2)
+        );
 
         result.success(success)
     }
@@ -112,13 +177,13 @@ object ConvertCoordinate : MapMethodHandler {
     lateinit var map: AMap
 
     private val types = arrayListOf(
-            CoordinateConverter.CoordType.GPS,
-            CoordinateConverter.CoordType.BAIDU,
-            CoordinateConverter.CoordType.MAPBAR,
-            CoordinateConverter.CoordType.MAPABC,
-            CoordinateConverter.CoordType.SOSOMAP,
-            CoordinateConverter.CoordType.ALIYUN,
-            CoordinateConverter.CoordType.GOOGLE
+        CoordinateConverter.CoordType.GPS,
+        CoordinateConverter.CoordType.BAIDU,
+        CoordinateConverter.CoordType.MAPBAR,
+        CoordinateConverter.CoordType.MAPABC,
+        CoordinateConverter.CoordType.SOSOMAP,
+        CoordinateConverter.CoordType.ALIYUN,
+        CoordinateConverter.CoordType.GOOGLE
     )
 
     override fun with(map: AMap): ConvertCoordinate {
@@ -131,9 +196,9 @@ object ConvertCoordinate : MapMethodHandler {
         val lon = call.argument<Double>("lon")!!
         val typeIndex = call.argument<Int>("type")!!
         val amapCoordinate = CoordinateConverter(AMapBasePlugin.registrar.context())
-                .from(types[typeIndex])
-                .coord(LatLng(lat, lon, false))
-                .convert()
+            .from(types[typeIndex])
+            .coord(LatLng(lat, lon, false))
+            .convert()
 
         result.success(amapCoordinate.toFieldJson())
     }
@@ -173,7 +238,7 @@ object ClearMap : MapMethodHandler {
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        map.clear()
+        map.clear(true)
 
         result.success(success)
     }
@@ -187,8 +252,8 @@ object OpenOfflineManager : MapMethodHandler {
 
     override fun onMethodCall(p0: MethodCall, p1: MethodChannel.Result) {
         AMapBasePlugin.registrar.activity().startActivity(
-                Intent(AMapBasePlugin.registrar.activity(),
-                        OfflineMapActivity::class.java)
+            Intent(AMapBasePlugin.registrar.activity(),
+                OfflineMapActivity::class.java)
         )
     }
 }
@@ -304,7 +369,7 @@ object AddMarker : MapMethodHandler {
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         val optionsJson = call.argument<String>("markerOptions") ?: "{}"
-
+        isAnimated = call.argument("isAnimated") ?: false
         log("方法marker#addMarker android端参数: optionsJson -> $optionsJson")
 
         optionsJson.parseFieldJson<UnifiedMarkerOptions>().applyTo(map)
@@ -340,7 +405,194 @@ object AddMarkers : MapMethodHandler {
         result.success(success)
     }
 }
+private var moveMarker: SmoothMoveMarker ?= null
+object addMoveAnimation : MapMethodHandler, SmoothMoveMarker.MoveListener {
 
+    lateinit var map: AMap
+    override fun with(map: AMap): addMoveAnimation {
+        this.map = map
+        return this
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        val coordinatesListJson = call.argument<String>("coordinatesList") ?: ""
+        val duration: Double = call.argument<Double>("duration") ?: 0.0
+        val actions = call.argument<Int>("actions") ?: 1
+        val icon : String = call.argument<String>("icon")?: ""
+        /*      if (icon.equals("") || icon == null) {
+                  return
+              }
+              map!!.clear();*/
+        log("方法addMoveAnimation#onMethodCall android端参数: coordinatesListJson -> $coordinatesListJson")
+        log("方 法addMoveAnimation#onMethodCall android端参数: duration -> $duration")
+        log("方 法addMoveAnimation#onMethodCall android端参数: actions -> $actions")
+        log("方 法addMoveAnimation#onMethodCall android端参数: icon -> $icon")
+
+        //Json的解析类对象
+        val parser = JsonParser()
+        //将JSON的String 转成一个JsonArray对象
+        val jsonArray: JsonArray = parser.parse(coordinatesListJson).getAsJsonArray()
+        val gson = Gson()
+        val latlngList: ArrayList<LatLng> = ArrayList()
+        for (user in jsonArray) {
+            //使用GSON，直接转成Bean对象
+            val lat: LatLng = gson.fromJson(user, LatLng::class.java)
+            latlngList.add(lat)
+        }
+
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(
+            LatLngBounds.builder().run {
+                coordinatesListJson.parseFieldJson<List<LatLng>>().forEach {
+                    include(it)
+                }
+                build()
+            },
+            100
+        ))
+        if (moveMarker != null && actions ==1) {
+            moveMarker?.removeMarker();
+            moveMarker?.destroy();
+            moveMarker = null;
+        }
+        if (moveMarker == null) {
+            moveMarker= SmoothMoveMarker(map)
+        }
+        // 设置滑动的图标
+        moveMarker?.setDescriptor(UnifiedAssets.getBitmapDescriptor(icon))
+        moveMarker?.setPoints(latlngList) //设置平滑移动的轨迹list
+        moveMarker?.setTotalDuration(duration.toInt())
+        if (actions ==1) {
+            moveMarker?.startSmoothMove();
+        }else{
+            moveMarker?.stopMove();
+        }
+//        AMapFactory.fail="";
+
+
+        moveMarker?.setMoveListener(this);
+        result.success(success)
+    }
+
+    override fun move(distance: Double) {
+        if (distance == 0.0) {
+            moveMarker?.removeMarker();
+            moveMarker?.stopMove();
+            moveMarker?.destroy();
+            moveMarker = null;
+            AMapBasePlugin.registrar.activity().runOnUiThread(){
+                mapPlayFinshUserSink?.success("回放结束")
+            }
+        }
+    }
+}
+
+
+object lBSTraceClient : MapMethodHandler, TraceListener {
+
+    lateinit var map: AMap
+    lateinit var latlngList: List<CustomLatlng>
+    lateinit var mResult : MethodChannel.Result
+    override fun with(map: AMap): lBSTraceClient{
+        this.map = map
+        return this
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        mResult = result
+//        val origin : List<String> = call.argument<List<String>>("origin")?:
+        val optionsListJson = call.argument<String>("origin") ?: "[]"
+/*        //Json的解析类对象
+        val parser = JsonParser()
+        //将JSON的String 转成一个JsonArray对象
+        val jsonArray: JsonArray = parser.parse(origin).getAsJsonAr       ray()*/
+        log("方法lBSTraceClient#onMethodCall android端参数: optionsListJson -> ${optionsListJson.toString()}")
+        latlngList = optionsListJson.parseFieldJson<List<CustomLatlng>>();
+        log("方法lBSTraceClient#onMethodCall android端参数: latlngList -> ${latlngList.toString()}")
+
+
+//        val latlngList: ArrayList<LatLng> = ArrayList()
+//        val gson = Gson()
+//        optionsList.forEach{
+//            val lat: LatLng = gson.fromJson(it, LatLng::class.java)
+//            latlngList.add(lat)
+//        }
+
+        /*  val latlngList: ArrayList<LatLng> = ArrayList()
+          for (user in jsonArray) {
+              //使用GSON，直接转成Bean对象
+              val lat: LatLng = gson.fromJson(user, LatLng::class.java)
+              latlngList.add(lat)
+          }*/
+        val mTraceClient = LBSTraceClient(registrar.activity().applicationContext)
+        val traceList: ArrayList<TraceLocation> = ArrayList()
+
+        for (user in latlngList) {
+            var traceLocation = TraceLocation();
+//            traceLocation.latitude = user.longitude
+//            traceLocation.longitude = user.latitude 
+            traceLocation.latitude = user.latitude
+            traceLocation.longitude = user.longitude
+            traceLocation.speed = user.speed.toFloat()
+            traceLocation.bearing = user.angle.toFloat()
+
+//            traceLocation.time = time
+            traceList.add(traceLocation)
+        }
+        mTraceClient.queryProcessedTrace(1,traceList,LBSTraceClient.TYPE_AMAP, this)
+
+        log("方法lBSTraceClient#onMethodCall android端参数: origin -> ${traceList.toString()}")
+    }
+
+    override fun onRequestFailed(p0: Int, p1: String?) {
+        log("onRequestFailed")
+
+        val latlngListString: ArrayList<String> = ArrayList()
+        latlngList?.forEach {
+            var st = it.toFieldJson();
+            latlngListString.add(st)
+        }
+        mResult.success(latlngListString)
+
+    }
+
+    override fun onTraceProcessing(p0: Int, p1: Int, p2: MutableList<LatLng>?) {
+        log("onTraceProcessing")
+    }
+
+    override fun onFinished(p0: Int, list: MutableList<LatLng>?, p2: Int, p3: Int) {
+        log("onFinished")
+        val latlngList: ArrayList<LatLng> = ArrayList()
+        list?.forEach {
+            latlngList .add(LatLng(it.latitude,it.longitude))
+        }
+        val latlngListString: ArrayList<String> = ArrayList()
+        latlngList?.forEach {
+            var st = it.toFieldJson();
+            latlngListString.add(st)
+        }
+        mResult.success(latlngListString)
+    }
+}
+
+
+
+/*object dectory : MapMethodHandler {
+
+    lateinit var map: AMap
+
+    override fun with(map: AMap): dectory {
+        this.map = map
+        return this
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+
+        map.clear()
+        map.addCircle(options)
+
+        result.success(success)
+    }
+}*/
 object AddCircle : MapMethodHandler {
 
     lateinit var map: AMap
@@ -366,7 +618,7 @@ object AddCircle : MapMethodHandler {
         options.center(LatLng(obj.getJSONObject("position").getDouble("latitude"), obj.getJSONObject("position").getDouble("longitude")))
         options.radius(obj.getDouble("radius"))
 
-        map.clear()
+        map.clear(true)
         map.addCircle(options)
 
         result.success(success)
@@ -411,7 +663,6 @@ object ClearMarker : MapMethodHandler {
 object ChangeLatLng : MapMethodHandler {
 
     lateinit var map: AMap
-
     override fun with(map: AMap): ChangeLatLng {
         this.map = map
         return this
@@ -476,18 +727,18 @@ object getVisibleRegion : MapMethodHandler {
     }
 }
 
-object SetPosition : MapMethodHandler {
+object SetMapCenter : MapMethodHandler {
 
     lateinit var map: AMap
 
-    override fun with(map: AMap): SetPosition {
+    override fun with(map: AMap): SetMapCenter {
         this.map = map
         return this
     }
 
     override fun onMethodCall(methodCall: MethodCall, methodResult: MethodChannel.Result) {
         val target: LatLng = methodCall.argument<String>("target")?.parseFieldJson()
-                ?: beijingLatLng
+            ?: beijingLatLng
         val zoom: Double = methodCall.argument<Double>("zoom") ?: 10.0
         val tilt: Double = methodCall.argument<Double>("tilt") ?: 0.0
         val bearing: Double = methodCall.argument<Double>("bearing") ?: 0.0
@@ -530,13 +781,13 @@ object ZoomToSpan : MapMethodHandler {
         val padding = methodCall.argument<Int>("padding") ?: 80
 
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(
-                LatLngBounds.builder().run {
-                    boundJson.parseFieldJson<List<LatLng>>().forEach {
-                        include(it)
-                    }
-                    build()
-                },
-                padding
+            LatLngBounds.builder().run {
+                boundJson.parseFieldJson<List<LatLng>>().forEach {
+                    include(it)
+                }
+                build()
+            },
+            padding
         ))
 
         methodResult.success(success)

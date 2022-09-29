@@ -19,6 +19,7 @@ static NSString *regionDidChangeName = @"foton/regionDidChange";
 static NSString *regionWillChangeName = @"foton/regionWillChange";
 static NSString *mapDidZoomByUserName = @"foton/mapDidZoomByUser";
 static NSString *mapDidMoveByUserName = @"foton/mapDidMoveByUser";
+static NSString *playFinish =  @"foton/playFinish";
 
 @interface MarkerEventHandler : NSObject <FlutterStreamHandler>
 @property(nonatomic) FlutterEventSink sink;
@@ -90,12 +91,14 @@ static NSString *mapDidMoveByUserName = @"foton/mapDidMoveByUser";
   FlutterEventChannel *_regionWillChangeEventChannel;
   FlutterEventChannel *_mapDidZoomByUserEventChannel;
   FlutterEventChannel *_mapDidMoveByUserEventChannel;
+  FlutterEventChannel *_playFinishEventChannel;
   MAMapView *_mapView;
   MarkerEventHandler *_eventHandler;
   MapDelegateEventHandler *_eventMapDidChangeDelegateHandler;
   MapDelegateEventHandler *_eventMapWillChangeDelegateHandler;
   MapDelegateEventHandler *_eventMapDidZoomByUserDelegateHandler;
   MapDelegateEventHandler *_eventMapDidMoveByUserDelegateHandler;
+  MapDelegateEventHandler *_eventplayFinishDelegateHandler;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -192,6 +195,30 @@ static NSString *mapDidMoveByUserName = @"foton/mapDidMoveByUser";
                                                              binaryMessenger:[AmapSpecialPlugin registrar].messenger];
     
     [_mapDidZoomByUserEventChannel setStreamHandler:_eventMapDidZoomByUserDelegateHandler];
+    
+    
+    /// 动画播放完成
+    _eventplayFinishDelegateHandler = [[MapDelegateEventHandler alloc] init];
+    _playFinishEventChannel = [FlutterEventChannel eventChannelWithName:[NSString stringWithFormat:@"%@%lld", playFinish, _viewId]
+                                                              binaryMessenger:[AmapSpecialPlugin registrar].messenger];
+    [_playFinishEventChannel setStreamHandler:_eventplayFinishDelegateHandler];
+    
+    
+    
+    
+   //添加通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playFinish) name:@"palyFinish" object:nil];
+}
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma playFinish
+- (void)playFinish{
+    if(_eventplayFinishDelegateHandler.sinkDelegate){
+        _eventplayFinishDelegateHandler.sinkDelegate(@"播放完成");
+    }
 }
 
 #pragma MAMapViewDelegate
@@ -326,7 +353,16 @@ static NSString *mapDidMoveByUserName = @"foton/mapDidMoveByUser";
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             annotationView.selected = options.selected;
         });
-    } else {
+    } else if([annotation isKindOfClass:[MarkerAnimatedAnnotation class]]){
+        UnifiedMarkerOptions *options = ((MarkerAnimatedAnnotation *) annotation).markerOptions;
+        if (options.icon != nil) {
+          annotationView.image = [UIImage imageWithContentsOfFile:[UnifiedAssets getAssetPath:options.icon]];
+  //          annotationView.image = [UIImage imageNamed:@"home_map_icon_positioning_nor"];
+        } else {
+          annotationView.image = [UIImage imageWithContentsOfFile:[UnifiedAssets getDefaultAssetPath:@"images/default_marker.png"]];
+        }
+    }
+    else {
       if ([[annotation title] isEqualToString:@"起点"]) {
         annotationView.image = [UIImage imageWithContentsOfFile:[UnifiedAssets getDefaultAssetPath:@"images/amap_start.png"]];
       } else if ([[annotation title] isEqualToString:@"终点"]) {

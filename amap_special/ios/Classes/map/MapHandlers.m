@@ -33,6 +33,47 @@
 
 @end
 
+@implementation SetCustomMapStyleOptions {
+    MAMapView *_mapView;
+}
+
+- (NSObject <MapMethodHandler> *)initWith:(MAMapView *)mapView {
+    _mapView = mapView;
+    return self;
+}
+
+- (void)onMethodCall:(FlutterMethodCall *)call :(FlutterResult)result {
+    NSDictionary *paramDic = call.arguments;
+    NSString *styleId = (NSString *) paramDic[@"styleId"];
+    NSString *stylePath = (NSString *) paramDic[@"stylePath"];
+    NSString *extraStylePath = (NSString *) paramDic[@"extraStylePath"];
+
+    NSLog(@"方法map#SetCustomMapStyleOptions iOS: styleId -> %@", styleId);
+
+    
+    NSString *path = [UnifiedAssets getDefaultAssetPath:stylePath];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSString *pathExtra = [UnifiedAssets getDefaultAssetPath:extraStylePath];
+    NSData *dataExtra = [NSData dataWithContentsOfFile:pathExtra];
+
+    NSLog(@"方法map#SetCustomMapStyleOptions iOS: path -> %@ pathExtra -> %@", path, extraStylePath);
+    
+    MAMapCustomStyleOptions *option = [[MAMapCustomStyleOptions alloc] init];
+    [option setStyleId:styleId];
+    [option setStyleData:data];
+    [option setStyleExtraData:dataExtra];
+    [_mapView setCustomMapStyleOptions:option];
+    [_mapView setCustomMapStyleEnabled:YES];
+
+
+
+//    [_mapView setCustomMapStyleID:styleId];
+    result(success);
+}
+
+@end
+
+
 @implementation SetCustomMapStylePath {
     MAMapView *_mapView;
 }
@@ -141,6 +182,83 @@
     CGFloat lat = [[dict valueForKey:@"latitude"] floatValue];
     CGFloat lng = [[dict valueForKey:@"longitude"] floatValue];
     return MAMapPointForCoordinate(CLLocationCoordinate2DMake(lat,lng));
+}
+
+@end
+
+@implementation ProcessedTrace{
+    MAMapView *_mapView;
+    NSOperation *_queryOperation;
+    FlutterResult _result;
+    NSArray <LatLng *> *_originLatLngArray;
+}
+
+- (NSObject<MapMethodHandler> *)initWith:(MAMapView *)mapView {
+    _mapView = mapView;
+    return self;
+}
+
+- (void)onMethodCall:(FlutterMethodCall *)call :(FlutterResult)result {
+    
+    _result = result;
+    
+    NSDictionary *params = [call arguments];
+
+    NSString *originJson = (NSString *) params[@"origin"];
+
+    NSArray <LatLng *> *latLngArray = [LatLng mj_objectArrayWithKeyValuesArray:originJson];
+    _originLatLngArray = latLngArray;
+    
+    NSMutableArray *mArr = [NSMutableArray array];
+    for (int i=0; i<latLngArray.count; i++) {
+        LatLng *aa = latLngArray[i];
+        MATraceLocation *location = [[MATraceLocation alloc] init];
+        CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(aa.latitude, aa.longitude);
+        location.loc = coordinate;
+        location.angle = aa.angle;
+        location.speed = aa.speed;
+        location.time = aa.time;
+        NSLog(@"%lf, %lf", location.loc.longitude, location.angle);
+        [mArr addObject:location];
+    }
+    
+    
+    MATraceManager *manager = [[MATraceManager alloc] init];
+    
+    NSOperation *op = [manager queryProcessedTraceWith:mArr type:-1 processingCallback:^(int index, NSArray<MATracePoint *> *points) {
+        //正在处理
+//            [weakSelf addSubTrace:points toMapView:weakSelf.mapView2];
+        }  finishCallback:^(NSArray<MATracePoint *> *points, double distance) {
+            self->_queryOperation = nil;
+
+            NSMutableArray *traces = [NSMutableArray new];
+
+            for (MATracePoint *r in points) {
+                LatLng *ll = [[LatLng alloc] init];
+                ll.latitude = r.latitude;
+                ll.longitude = r.longitude;
+                [traces addObject:[ll mj_JSONString]];
+            }
+            [self setResult:traces];
+            
+            
+        } failedCallback:^(int errorCode, NSString *errorDesc) {
+            NSLog(@"Error: %@", errorDesc);
+            self->_queryOperation = nil;
+            NSMutableArray *traces = [NSMutableArray new];
+            for (LatLng *r in _originLatLngArray) {
+                [traces addObject:[r mj_JSONString]];
+            }
+            [self setResult:traces];
+        }];
+    _queryOperation = op;
+    
+}
+- (void)setResult:(id _Nullable)r {
+    if (_result) {
+        _result(r);
+        _result = nil;
+    }
 }
 
 @end
@@ -335,13 +453,25 @@
     NSLog(@"方法marker#addMarker ios端参数: optionsJson -> %@", optionsJson);
     UnifiedMarkerOptions *markerOptions = [UnifiedMarkerOptions mj_objectWithKeyValues:optionsJson];
 
-    MarkerAnnotation *annotation = [[MarkerAnnotation alloc] init];
-    annotation.coordinate = [markerOptions.position toCLLocationCoordinate2D];
-    annotation.title = markerOptions.title;
-    annotation.subtitle = markerOptions.snippet;
-    annotation.markerOptions = markerOptions;
-
-    [_mapView addAnnotation:annotation];
+    NSNumber *boolNum = paramDic[@"isAnimated"];
+    BOOL isAnimated = [boolNum boolValue];
+    
+    if(isAnimated){
+        MarkerAnimatedAnnotation *anno = [[MarkerAnimatedAnnotation alloc] init];
+        anno.coordinate = [markerOptions.position toCLLocationCoordinate2D];
+        anno.title = markerOptions.title;
+        anno.markerOptions = markerOptions;
+        [_mapView addAnnotation:anno];
+        [_mapView setCenterCoordinate:[markerOptions.position toCLLocationCoordinate2D] animated:YES];
+    }else{
+        MarkerAnnotation *annotation = [[MarkerAnnotation alloc] init];
+        annotation.coordinate = [markerOptions.position toCLLocationCoordinate2D];
+        annotation.title = markerOptions.title;
+        annotation.subtitle = markerOptions.snippet;
+        annotation.markerOptions = markerOptions;
+        [_mapView addAnnotation:annotation];
+    }
+   
 
     result(success);
 }
@@ -388,6 +518,196 @@
 
     result(success);
 }
+
+@end
+
+@implementation addMoveAnimation{
+    MAMapView *_mapView;
+    long currentCount;
+    long count;
+    NSString *duration;
+    NSString *isFinish;
+    NSString *isStop;
+    NSString *originTime;
+    NSString *isRepeat;
+    CLLocationCoordinate2D *coordinate;
+    NSArray *rawOptionsList;
+}
+
+- (NSObject <MapMethodHandler> *)initWith:(MAMapView *)mapView {
+    _mapView = mapView;
+    currentCount = 1;
+    count = 1;
+    return self;
+}
+
+- (void)onMethodCall:(FlutterMethodCall *)call :(FlutterResult)result {
+    
+    NSDictionary *paramDic = call.arguments;
+    
+    __block MAAnimatedAnnotation *anno;
+    [_mapView.annotations enumerateObjectsUsingBlock:^(MAAnimatedAnnotation *annotation, NSUInteger idx, BOOL * _Nonnull stop) {
+        //if([annotation isKindOfClass:[MarkerAnimatedAnnotation class]]){
+        //    anno = annotation;
+        //}
+        if([annotation.title isEqualToString:@"小车"]){
+            anno = annotation;
+        }
+    }];
+    
+    if(anno == nil){
+        result(@"没有小车");
+        return;
+    }
+    
+    int actions = [paramDic[@"actions"] intValue];//
+    
+    
+    //暂停
+    if (actions == 2) {
+        for (MAAnnotationMoveAnimation *animation in [anno allMoveAnimations]) {
+            [animation cancel];
+            currentCount = animation.passedPointCount;
+            count = animation.count;
+            
+            rawOptionsList = [rawOptionsList subarrayWithRange:NSMakeRange(currentCount, count-currentCount)];
+            double d = [self->duration doubleValue];
+            double per = currentCount*1.0 / count;
+            self->duration = [NSString stringWithFormat:@"%lf", d*per];
+            
+            self->isStop = @"YES";
+            self->isFinish = @"YES"; //继续播放
+            self->isRepeat = @"NO";
+        }
+        return;
+    }
+    
+    //播放
+    
+    if (actions == 1) {
+        
+        double dura = [paramDic[@"duration"] doubleValue];
+        
+        BOOL diff = NO;
+        BOOL cancel = NO;
+        if ([self->originTime doubleValue] != dura) {
+            diff = YES;
+            self->originTime = [NSString stringWithFormat:@"%lf", dura];
+            //取消以前的 (半路开始)
+            for (MAAnnotationMoveAnimation *animation in [anno allMoveAnimations]) {
+                [animation cancel];
+                cancel = YES;
+                currentCount = animation.passedPointCount;
+                count = animation.count;
+                
+                rawOptionsList = [rawOptionsList subarrayWithRange:NSMakeRange(currentCount, count-currentCount)];
+                double d = [self->originTime doubleValue];
+                double per = (count-currentCount)*1.0 / count;
+                self->duration = [NSString stringWithFormat:@"%lf", d*per];
+                
+                self->isStop = @"YES";
+                self->isFinish = @"YES"; //继续播放
+            }
+        }else{
+            //新的
+            if([self->isRepeat isEqual:@"YES"]){
+                self->isStop = @"NO";
+            }
+            //暂停
+            if([self->isRepeat isEqual:@"NO"]){
+                self->isStop = @"YES";
+            }
+        }
+        
+        
+        if (self->isFinish == nil || [self->isFinish  isEqual: @"YES"] || diff==YES) {
+            
+            if ([self->isStop isEqual:@"YES"]) {
+                
+            }else{
+                currentCount = 1;
+                self->isFinish = @"NO";
+                self->isStop =  @"NO";
+                
+                NSString *coordinatesListJson = (NSString *) paramDic[@"coordinatesList"];
+                
+                if([coordinatesListJson isEqualToString:@"[]"]){
+                    result(@"没有轨迹");
+                    return;
+                }
+                
+                rawOptionsList = [NSJSONSerialization JSONObjectWithData:[coordinatesListJson dataUsingEncoding:NSUTF8StringEncoding]
+                                                                          options:kNilOptions
+                                                                            error:nil];
+                
+                coordinate = malloc(sizeof(CLLocationCoordinate2D)*rawOptionsList.count);
+                
+                
+                if (cancel == NO) {
+                    double dura = [paramDic[@"duration"] doubleValue];
+                    self->duration = [NSString stringWithFormat:@"%lf", dura];
+                }
+            }
+
+            for (NSUInteger i = 0; i < rawOptionsList.count; ++i) {
+                LatLng *position = [LatLng mj_objectWithKeyValues:rawOptionsList[i]];
+                
+                if(i==0){
+                    //复位
+                    anno.coordinate = [position toCLLocationCoordinate2D];
+                }
+                
+                CLLocationCoordinate2D *point = &coordinate[i];
+                point->latitude = position.latitude;
+                point->longitude = position.longitude;
+            }
+            
+            
+            [anno addMoveAnimationWithKeyCoordinates:coordinate count:rawOptionsList.count withDuration:[self->duration doubleValue] withName:anno.title completeCallback:^(BOOL isFinished) {
+                if(isFinished){
+                    free(self->coordinate);
+                    self->rawOptionsList = nil;
+                    self->isFinish = @"YES";
+                    self->isStop = @"NO";
+                    self->isRepeat = @"YES";
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"palyFinish" object:nil];
+                }
+            }];
+        }
+        
+    }
+    
+    
+    
+//    if(coordinate) {
+//
+//        for (NSUInteger i = 0; i < rawOptionsList.count; ++i) {
+//            LatLng *position = [LatLng mj_objectWithKeyValues:rawOptionsList[i]];
+//
+//            if(i==0){
+//                //复位
+//                anno.coordinate = [position toCLLocationCoordinate2D];
+//            }
+//
+//            CLLocationCoordinate2D *point = &coordinate[i];
+//            point->latitude = position.latitude;
+//            point->longitude = position.longitude;
+//        }
+//
+//
+//        [anno addMoveAnimationWithKeyCoordinates:coordinate count:rawOptionsList.count withDuration:[duration doubleValue] withName:anno.title completeCallback:^(BOOL isFinished) {
+//            if(isFinished){
+//                free(self->coordinate);
+//                self->rawOptionsList = nil;
+//                self->isFinish = @"YES";
+//            }
+//        }];
+//
+//    }
+
+    result(success);
+}
+
 
 @end
 
@@ -597,7 +917,8 @@
 
 @end
 
-@implementation SetPosition {
+#pragma mark -- 设置地图中心点
+@implementation SetMapCenter {
     MAMapView *_mapView;
 }
 - (NSObject <MapMethodHandler> *)initWith:(MAMapView *)mapView {

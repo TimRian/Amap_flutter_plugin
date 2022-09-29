@@ -14,6 +14,9 @@
 @class MAMapView;
 @class UnifiedCircleOptions;
 
+@interface MarkerAnimatedAnnotation : MAAnimatedAnnotation
+@property(nonatomic) UnifiedMarkerOptions *markerOptions;
+@end
 
 @interface MarkerAnnotation : MAPointAnnotation
 @property(nonatomic) UnifiedMarkerOptions *markerOptions;
@@ -85,6 +88,13 @@
 
 @property(nonatomic) CGFloat latitude;
 @property(nonatomic) CGFloat longitude;
+
+///角度, 标识移动方向，单位度
+@property(nonatomic) CGFloat angle;
+///速度，单位km/h
+@property(nonatomic) CGFloat speed;
+///时间，单位毫秒
+@property(nonatomic) CGFloat time;
 
 - (CLLocationCoordinate2D)toCLLocationCoordinate2D;
 

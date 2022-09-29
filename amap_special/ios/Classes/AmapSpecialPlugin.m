@@ -16,6 +16,9 @@
 #import "FunctionRegistry.h"
 #import "AMapViewFactory.h"
 
+
+
+
 static NSObject <FlutterPluginRegistrar> *_registrar;
 
 @implementation AmapSpecialPlugin
@@ -42,6 +45,17 @@ static NSObject <FlutterPluginRegistrar> *_registrar;
             NSString *key = call.arguments[@"key"];
             [AMapServices sharedServices].apiKey = key;
             result(@"key设置成功");
+        }else{
+            result(FlutterMethodNotImplemented);
+        }
+    }];
+
+    // 工具 channel
+    FlutterMethodChannel *toolChannel = [FlutterMethodChannel methodChannelWithName:@"foton/tool" binaryMessenger:registrar.messenger];
+    [toolChannel setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
+        NSObject <MapMethodHandler> *hander = [MapFunctionRegistry mapMethodHandler][call.method];
+        if (hander) {
+            [[hander init] onMethodCall:call :result];
         }else{
             result(FlutterMethodNotImplemented);
         }

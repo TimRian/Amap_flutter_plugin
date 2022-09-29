@@ -6,7 +6,6 @@ class Location {
   String address;
   num altitude;
   String aoiName;
-  num bearing;
   String buildingId;
   String city;
   String cityCode;
@@ -20,19 +19,22 @@ class Location {
   bool isFixLastLocation;
   bool isMock;
   bool isOffset;
-  num latitude;
+  double latitude;
   String locationDetail;
   LocationQualityReport locationQualityReport;
   num locationType;
-  num longitude;
+  double longitude;
   String poiName;
   String provider;
   String province;
   num satellites;
-  num speed;
   String street;
   String streetNum;
   num trustedLevel;
+  //速度
+  double speed;
+  //角度
+  double bearing;
 
   Location({
     this.accuracy,
@@ -75,7 +77,7 @@ class Location {
     address = json['address'] as String;
     altitude = json['altitude'] as num;
     aoiName = json['aoiName'] as String;
-    bearing = json['bearing'] as num;
+    bearing = json['bearing']?.toDouble();
     buildingId = json['buildingId'] as String;
     city = json['city'] as String;
     cityCode = json['cityCode'] as String;
@@ -89,18 +91,18 @@ class Location {
     isFixLastLocation = json['isFixLastLocation'] as bool;
     isMock = json['isMock'] as bool;
     isOffset = json['isOffset'] as bool;
-    latitude = json['latitude'] as num;
+    latitude = json['latitude']?.toDouble();
     locationDetail = json['locationDetail'] as String;
     locationQualityReport = json['locationQualityReport'] != null
         ? LocationQualityReport.fromJson(json['locationQualityReport'])
         : null;
     locationType = json['locationType'] as int;
-    longitude = json['longitude'] as num;
+    longitude = json['longitude']?.toDouble();
     poiName = json['poiName'] as String;
     provider = json['provider'] as String;
     province = json['province'] as String;
     satellites = json['satellites'] as int;
-    speed = json['speed'] as num;
+    speed = json['speed']?.toDouble();
     street = json['street'] as String;
     streetNum = json['streetNum'] as String;
     trustedLevel = json['trustedLevel'] as int;
@@ -151,7 +153,7 @@ class Location {
     String address,
     num altitude,
     String aoiName,
-    num bearing,
+    double bearing,
     String buildingId,
     String city,
     String cityCode,
@@ -165,16 +167,16 @@ class Location {
     bool isFixLastLocation,
     bool isMock,
     bool isOffset,
-    num latitude,
+    double latitude,
     String locationDetail,
     LocationQualityReport locationQualityReport,
     num locationType,
-    num longitude,
+    double longitude,
     String poiName,
     String provider,
     String province,
     num satellites,
-    num speed,
+    double speed,
     String street,
     String streetNum,
     num trustedLevel,

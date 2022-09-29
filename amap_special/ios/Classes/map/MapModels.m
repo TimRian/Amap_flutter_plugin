@@ -7,6 +7,12 @@
 #import "NSString+Color.h"
 #import "MJExtension.h"
 
+@implementation MarkerAnimatedAnnotation{
+    
+}
+
+@end
+
 
 @implementation MarkerAnnotation {
 

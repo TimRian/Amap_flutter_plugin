@@ -12,11 +12,17 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlineButton(
-      padding: EdgeInsets.symmetric(vertical: 8),
-      color: Colors.black,
+    return OutlinedButton(
+      style: ButtonStyle(
+        padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 8)),
+        foregroundColor:
+        MaterialStateProperty.all(Colors.white),
+        overlayColor: MaterialStateProperty.all(
+            Color(0x66FFFFFF)),
+        backgroundColor:
+        MaterialStateProperty.all( Colors.black),
+      ),
       onPressed: () => onPressed(context),
-      shape: StadiumBorder(),
       child: Text(
         label,
         style: TextStyle(color: Colors.white, fontSize: 15),

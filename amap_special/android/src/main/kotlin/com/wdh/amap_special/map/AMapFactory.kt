@@ -14,7 +14,7 @@ import com.amap.api.maps.Projection
 import com.amap.api.maps.TextureMapView
 import com.amap.api.maps.model.CameraPosition
 import com.amap.api.maps.model.LatLng
-import com.autonavi.amap.mapcore.IPoint
+import com.amap.api.maps.utils.overlay.SmoothMoveMarker
 import com.wdh.amap_special.*
 import com.wdh.amap_special.AMapBasePlugin.Companion.registrar
 import com.wdh.amap_special.common.parseFieldJson
@@ -33,12 +33,18 @@ const val regionDidChangeChannelName = "foton/regionDidChange"
 const val regionWillChangeChannelName = "foton/regionWillChange"
 const val mapDidZoomByUserName = "foton/mapDidZoomByUser"
 const val mapDidMoveByUserName = "foton/mapDidMoveByUser"
+const val playFinish = "foton/playFinish"
 const val success = "调用成功"
+var mId  = -1 ;
+var mapPlayFinshUserSink: EventChannel.EventSink? = null
+var eventSink: EventChannel.EventSink? = null
 
-class AMapFactory(private val activityState: AtomicInteger)
+
+class AMapFactory(val activityState: AtomicInteger)
     : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
-
+    
     override fun create(context: Context, id: Int, params: Any?): PlatformView {
+        mId = id ;
         val view = AMapView(
                 context,
                 id,
@@ -54,7 +60,7 @@ class AMapFactory(private val activityState: AtomicInteger)
 class AMapView(context: Context,
                private val id: Int,
                private val activityState: AtomicInteger,
-               amapOptions: AMapOptions) : PlatformView, Application.ActivityLifecycleCallbacks ,AMap.OnCameraChangeListener, AMap.OnMapTouchListener {
+               amapOptions: AMapOptions) : PlatformView, Application.ActivityLifecycleCallbacks ,AMap.OnCameraChangeListener, AMap.OnMapTouchListener{
 
     private val mapView = TextureMapView(context, amapOptions)
     private var disposed = false
@@ -100,8 +106,8 @@ class AMapView(context: Context,
         }
 
         // marker click event channel
-        var eventSink: EventChannel.EventSink? = null
         val markerClickedEventChannel = EventChannel(registrar.messenger(), "$markerClickedChannelName$id")
+        Logger.e("markerClickedChannelName ---------markerClickedChannelName" + "$markerClickedChannelName$mId")
         markerClickedEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(p: Any?, sink: EventChannel.EventSink?) {
                 eventSink = sink
@@ -152,10 +158,16 @@ class AMapView(context: Context,
             override fun onCancel(p: Any?) {}
         })
 
+        val mapDidPlayFinishByUserEventChannel = EventChannel(registrar.messenger(), "$playFinish$id")
+        mapDidPlayFinishByUserEventChannel.setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(p: Any?, sink: EventChannel.EventSink?) {
+                mapPlayFinshUserSink = sink
+            }
+            override fun onCancel(p: Any?) {}
+        })
         mapView.map.setOnCameraChangeListener(this)
         mapView.map.setOnMapTouchListener(this)
-        Logger.e("AMapView ---------"+"setOnCameraChangeListener")
-
+        Logger.e("AMapView ---------" + "setOnCameraChangeListener")
         // 注册生命周期
         registrar.activity().application.registerActivityLifecycleCallbacks(this)
     }
@@ -178,11 +190,11 @@ class AMapView(context: Context,
             val x = (mapView.getX() + (right - left) / 2).toInt()
             val y = (mapView.getY() + (bottom - top) / 2).toInt()
             val projection: Projection = mapView.map.getProjection()
-            val pt: LatLng = projection.fromScreenLocation(Point(x,y))
+            val pt: LatLng = projection.fromScreenLocation(Point(x, y))
             mg.success(pt.toFieldJson())
         }
             
-        Logger.e("AMapView ---------"+"onCameraChangeFinish")
+        Logger.e("AMapView ---------" + "onCameraChangeFinish")
 
         if (oldx == 0.0){
             zoomL = mapView.map.cameraPosition.zoom.toDouble();
@@ -262,7 +274,7 @@ class AMapView(context: Context,
         }
     }
 
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
         if (disposed || activity.hashCode() != registrarActivityHashCode) {
             return
         }
@@ -275,6 +287,7 @@ class AMapView(context: Context,
         }
         mapView.onDestroy()
     }
+
 }
 
 //class OnCameraChangeListenerImpl(private val mapDragEventChannel: EventChannel.EventSink) : AMap.OnCameraChangeListener{

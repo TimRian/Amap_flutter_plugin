@@ -22,6 +22,7 @@ class AMapController{
   final EventChannel _regionWillChangeEventChannel;
   final EventChannel _mapDidZoomByUserChannel;
   final EventChannel _mapDidMoveByUserChannel;
+  final EventChannel _playFinishEventChannel;
 
   AMapController.withId(int id)
       : _mapChannel = MethodChannel('foton/map$id'),
@@ -29,7 +30,8 @@ class AMapController{
         _regionDidChangeEventChannel = EventChannel('foton/regionDidChange$id'),
         _regionWillChangeEventChannel = EventChannel('foton/regionWillChange$id'),
         _mapDidZoomByUserChannel = EventChannel('foton/mapDidZoomByUser$id'),
-        _mapDidMoveByUserChannel = EventChannel('foton/mapDidMoveByUser$id')
+        _mapDidMoveByUserChannel = EventChannel('foton/mapDidMoveByUser$id'),
+        _playFinishEventChannel = EventChannel('foton/playFinish$id')
   ;
 
   void dispose() {}
@@ -60,18 +62,19 @@ class AMapController{
     );
   }
 
-
   //添加覆盖物
-  Future addMarker(MarkerOptions options){
+  Future addMarker(MarkerOptions options, {bool isAnimated = false}){
     final _optionsJson = options.toJsonString();
     L.p('方法addMarker dart端参数: _optionsJson -> $_optionsJson');
     return _mapChannel.invokeListMethod(
       'marker#addMarker',
-      {'markerOptions':_optionsJson},
+      {'markerOptions':_optionsJson,
+        'isAnimated':isAnimated
+      },
     );
   }
 
-
+  // 添加多个覆盖物
   Future addMarkers(List<MarkerOptions> optionsList, {
     bool moveToCenter = true,
     bool clear = true,
@@ -85,6 +88,26 @@ class AMapController{
           'moveToCenter': moveToCenter,
           'markerOptionsList': _optionsListJson,
           'clear': clear,
+        }
+    );
+  }
+
+  //actions: 1:播放  2:暂停
+  Future addMoveAnimation({List<LatLng> coordinates, double duration = 5, int actions = 1,String icon}){
+
+    if(coordinates == null){
+      coordinates = [];
+    }
+
+    final _optionsListJson =
+    jsonEncode(coordinates.map((it) => it.toJson()).toList());
+    return _mapChannel.invokeMethod(
+        'marker#addMoveAnimation',
+        {
+          'coordinatesList': _optionsListJson,
+          'duration': duration,
+          'actions': actions,
+          'icon': icon
         }
     );
   }
@@ -140,18 +163,17 @@ class AMapController{
     );
   }
 
-
   /// 设置地图中心点
-  Future setPosition({
+  Future setMapCenter({
     @required LatLng target,
     double zoom = 10,
     double tilt = 0,
     double bearing = 0,
   }) {
-    L.p('setPosition dart端参数: target -> $target, zoom -> $zoom, tilt -> $tilt, bearing -> $bearing');
+    L.p('setMapCenter dart端参数: target -> $target, zoom -> $zoom, tilt -> $tilt, bearing -> $bearing');
 
     return _mapChannel.invokeMethod(
-      'map#setPosition',
+      'map#setMapCenter',
       {
         'target': target.toJsonString(),
         'zoom': zoom,
@@ -179,7 +201,7 @@ class AMapController{
     /// 经度delta [iOS]
     @required double deltaLng,
   }) {
-    L.p('setPosition dart端参数: swLatLng -> $swLatLng, neLatLng -> $neLatLng, center -> $center, deltaLat -> $deltaLat, deltaLng -> $deltaLng');
+    L.p('setMapCenter dart端参数: swLatLng -> $swLatLng, neLatLng -> $neLatLng, center -> $center, deltaLat -> $deltaLat, deltaLng -> $deltaLng');
 
     return _mapChannel.invokeMethod(
       'map#setMapStatusLimits',
@@ -303,6 +325,20 @@ class AMapController{
     );
   }
 
+  /// 使用在线自定义样式Options
+  Future setCustomMapStyleOptions({String styleId, String stylePath, String extraStylePath}) {
+    L.p('setCustomMapStyleID dart端参数: styleId -> $styleId stylePath -> $stylePath extraStylePath -> $extraStylePath');
+
+    return _mapChannel.invokeMethod(
+      'map#setCustomMapStyleOptions',
+      {
+        'styleId': styleId,
+        'stylePath': stylePath,
+        'extraStylePath': extraStylePath
+      },
+    );
+  }
+
   /// marker点击事件流  来自native消息的接收
   Stream<MarkerOptions> get markerClickedEvent => _markerClickedEventChannel
       .receiveBroadcastStream()
@@ -323,4 +359,43 @@ class AMapController{
   /// 地图手动缩放
   Stream<LatLng> get mapDidZoomByUserEvent => _mapDidZoomByUserChannel.receiveBroadcastStream().map((data) => LatLng.fromJson(jsonDecode(data)));
 
+  ///动画播放完成
+  Stream<String> get playFinishEventChannel => _playFinishEventChannel.receiveBroadcastStream().map((data) => data);
+
+
+  Future<List<LatLng>> processedTrace(List<LatLng> origins) async{
+
+    List<Map<String, Object>> oriList = [];
+
+    origins.forEach((o) {
+      oriList.add(o.toJson());
+    });
+
+    Map<String, dynamic> params = {
+      "origin": oriList,
+    };
+
+    List result = await _mapChannel.invokeMethod("tool#processedTrace", params);
+
+    return result.map((v) => LatLng.fromJson(json.decode(v))).toList();
+  }
+
+  Future<List<LatLng>> processedTraceAndroid(List<LatLng> origins) async{
+   /* List<Map<String, Object>> oriList = [];
+
+    origins.forEach((o) {
+      oriList.add(o.toJson());
+    });*/
+    final _optionsListJson =
+    jsonEncode(origins.map((it) => it.toJson()).toList());
+    Map<String, dynamic> params = {
+      "origin": _optionsListJson,
+    };
+
+    List result = await _mapChannel.invokeMethod("tool#processedTrace", params);
+    List<LatLng> li = result.map((v) => LatLng.fromJson(json.decode(v))).toList();
+
+
+    return li;
+  }
 }

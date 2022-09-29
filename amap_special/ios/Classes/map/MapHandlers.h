@@ -8,7 +8,8 @@
 
 @interface SetCustomMapStyleID : NSObject <MapMethodHandler>
 @end
-
+@interface SetCustomMapStyleOptions : NSObject <MapMethodHandler>
+@end
 @interface SetCustomMapStylePath : NSObject <MapMethodHandler>
 @end
 
@@ -22,6 +23,9 @@
 @end
 
 @interface CalcDistance : NSObject <MapMethodHandler>
+@end
+
+@interface ProcessedTrace : NSObject <MapMethodHandler>
 @end
 
 @interface ClearMap : NSObject<MapMethodHandler>
@@ -62,6 +66,8 @@
 @interface AddMarkers : NSObject<MapMethodHandler>
 @end
 
+@interface addMoveAnimation : NSObject<MapMethodHandler>
+@end
 
 @interface AddPolyline : NSObject<MapMethodHandler>
 @end
@@ -81,8 +87,7 @@
 @interface SetMapStatusLimits : NSObject<MapMethodHandler>
 @end
 
-
-@interface SetPosition : NSObject<MapMethodHandler>
+@interface SetMapCenter : NSObject<MapMethodHandler>
 @end
 
 

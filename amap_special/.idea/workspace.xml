@@ -7,7 +7,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1246be33-c3fe-4f49-9739-22200b41ddf1" name="Default Changelist" comment="" />
+    <list default="true" id="1246be33-c3fe-4f49-9739-22200b41ddf1" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,6 +32,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
@@ -95,42 +98,45 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="606" y="180" key="#com.intellij.ide.util.MemberChooser" timestamp="1622446892595">
-      <screen x="0" y="0" width="1680" height="1050" />
-    </state>
-    <state x="606" y="180" key="#com.intellij.ide.util.MemberChooser/0.0.1680.1050@0.0.1680.1050" timestamp="1622446892595" />
-    <state width="359" height="466" key="DebuggerActiveHint" timestamp="1623825675981">
+    <state x="637" y="241" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1664267987643">
       <screen x="0" y="25" width="1440" height="875" />
     </state>
-    <state width="359" height="466" key="DebuggerActiveHint/0.25.1440.875@0.25.1440.875" timestamp="1623825675981" />
-    <state width="1433" height="186" key="GridCell.Tab.0.bottom" timestamp="1626948088339">
+    <state x="637" y="241" key="#com.intellij.fileTypes.FileTypeChooser/0.25.1440.875@0.25.1440.875" timestamp="1664267987643" />
+    <state x="250" y="125" width="1043" height="649" key="AVDManager" timestamp="1664433933687">
       <screen x="0" y="25" width="1440" height="875" />
     </state>
-    <state width="1628" height="265" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1622512520306" />
-    <state width="1433" height="186" key="GridCell.Tab.0.bottom/0.25.1440.875@0.25.1440.875" timestamp="1626948088339" />
-    <state width="1433" height="186" key="GridCell.Tab.0.center" timestamp="1626948088338">
+    <state x="250" y="125" width="1043" height="649" key="AVDManager/0.25.1440.875@0.25.1440.875" timestamp="1664433933687" />
+    <state width="1201" height="226" key="GridCell.Tab.0.bottom" timestamp="1664433949023">
       <screen x="0" y="25" width="1440" height="875" />
     </state>
-    <state width="1628" height="265" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1622512520305" />
-    <state width="1433" height="186" key="GridCell.Tab.0.center/0.25.1440.875@0.25.1440.875" timestamp="1626948088338" />
-    <state width="1433" height="186" key="GridCell.Tab.0.left" timestamp="1626948088338">
+    <state width="1201" height="226" key="GridCell.Tab.0.bottom/0.25.1440.875@0.25.1440.875" timestamp="1664433949023" />
+    <state width="1201" height="226" key="GridCell.Tab.0.center" timestamp="1664433949022">
       <screen x="0" y="25" width="1440" height="875" />
     </state>
-    <state width="1628" height="265" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1622512520305" />
-    <state width="1433" height="186" key="GridCell.Tab.0.left/0.25.1440.875@0.25.1440.875" timestamp="1626948088338" />
-    <state width="1433" height="186" key="GridCell.Tab.0.right" timestamp="1626948088338">
+    <state width="1201" height="226" key="GridCell.Tab.0.center/0.25.1440.875@0.25.1440.875" timestamp="1664433949022" />
+    <state width="1201" height="226" key="GridCell.Tab.0.left" timestamp="1664433949022">
       <screen x="0" y="25" width="1440" height="875" />
     </state>
-    <state width="1628" height="265" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1622512520306" />
-    <state width="1433" height="186" key="GridCell.Tab.0.right/0.25.1440.875@0.25.1440.875" timestamp="1626948088338" />
-    <state x="394" y="216" width="697" height="494" key="find.popup" timestamp="1627003403279">
+    <state width="1201" height="226" key="GridCell.Tab.0.left/0.25.1440.875@0.25.1440.875" timestamp="1664433949022" />
+    <state width="1201" height="226" key="GridCell.Tab.0.right" timestamp="1664433949023">
       <screen x="0" y="25" width="1440" height="875" />
     </state>
-    <state x="460" y="229" width="759" height="592" key="find.popup/0.0.1680.1050@0.0.1680.1050" timestamp="1622511705329" />
-    <state x="394" y="216" width="697" height="494" key="find.popup/0.25.1440.875@0.25.1440.875" timestamp="1627003403279" />
-    <state width="435" height="63" key="javadoc.popup.new" timestamp="1627003398606">
+    <state width="1201" height="226" key="GridCell.Tab.0.right/0.25.1440.875@0.25.1440.875" timestamp="1664433949023" />
+    <state x="333" y="143" key="SettingsEditor" timestamp="1664433933404">
       <screen x="0" y="25" width="1440" height="875" />
     </state>
-    <state width="435" height="63" key="javadoc.popup.new/0.25.1440.875@0.25.1440.875" timestamp="1627003398606" />
+    <state x="333" y="143" key="SettingsEditor/0.25.1440.875@0.25.1440.875" timestamp="1664433933404" />
+    <state x="618" y="190" width="597" height="490" key="find.popup" timestamp="1664435481687">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state x="618" y="190" width="597" height="490" key="find.popup/0.25.1440.875@0.25.1440.875" timestamp="1664435481687" />
+    <state width="435" height="63" key="javadoc.popup.new" timestamp="1664432949532">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="435" height="63" key="javadoc.popup.new/0.25.1440.875@0.25.1440.875" timestamp="1664432949532" />
+    <state x="471" y="117" width="723" height="635" key="new project wizard" timestamp="1664435265378">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state x="471" y="117" width="723" height="635" key="new project wizard/0.25.1440.875@0.25.1440.875" timestamp="1664435265378" />
   </component>
 </project>
