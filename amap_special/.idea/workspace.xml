@@ -8,7 +8,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1246be33-c3fe-4f49-9739-22200b41ddf1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +29,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="1kOqYtK6gyNtSYwWKxFNKBgUU44" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -33,10 +40,12 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
     <property name="aspect.path.notification.shown" value="true" />
+    <property name="cidr.known.project.marker" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1603789759997" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="dart.analysis.tool.window.visible" value="false" />
@@ -95,48 +104,5 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="637" y="241" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1664267987643">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state x="637" y="241" key="#com.intellij.fileTypes.FileTypeChooser/0.25.1440.875@0.25.1440.875" timestamp="1664267987643" />
-    <state x="250" y="125" width="1043" height="649" key="AVDManager" timestamp="1664433933687">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state x="250" y="125" width="1043" height="649" key="AVDManager/0.25.1440.875@0.25.1440.875" timestamp="1664433933687" />
-    <state width="1201" height="226" key="GridCell.Tab.0.bottom" timestamp="1664433949023">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state width="1201" height="226" key="GridCell.Tab.0.bottom/0.25.1440.875@0.25.1440.875" timestamp="1664433949023" />
-    <state width="1201" height="226" key="GridCell.Tab.0.center" timestamp="1664433949022">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state width="1201" height="226" key="GridCell.Tab.0.center/0.25.1440.875@0.25.1440.875" timestamp="1664433949022" />
-    <state width="1201" height="226" key="GridCell.Tab.0.left" timestamp="1664433949022">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state width="1201" height="226" key="GridCell.Tab.0.left/0.25.1440.875@0.25.1440.875" timestamp="1664433949022" />
-    <state width="1201" height="226" key="GridCell.Tab.0.right" timestamp="1664433949023">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state width="1201" height="226" key="GridCell.Tab.0.right/0.25.1440.875@0.25.1440.875" timestamp="1664433949023" />
-    <state x="333" y="143" key="SettingsEditor" timestamp="1664433933404">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state x="333" y="143" key="SettingsEditor/0.25.1440.875@0.25.1440.875" timestamp="1664433933404" />
-    <state x="618" y="190" width="597" height="490" key="find.popup" timestamp="1664435481687">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state x="618" y="190" width="597" height="490" key="find.popup/0.25.1440.875@0.25.1440.875" timestamp="1664435481687" />
-    <state width="435" height="63" key="javadoc.popup.new" timestamp="1664432949532">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state width="435" height="63" key="javadoc.popup.new/0.25.1440.875@0.25.1440.875" timestamp="1664432949532" />
-    <state x="471" y="117" width="723" height="635" key="new project wizard" timestamp="1664435265378">
-      <screen x="0" y="25" width="1440" height="875" />
-    </state>
-    <state x="471" y="117" width="723" height="635" key="new project wizard/0.25.1440.875@0.25.1440.875" timestamp="1664435265378" />
   </component>
 </project>

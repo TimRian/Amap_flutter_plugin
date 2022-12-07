@@ -1,6 +1,6 @@
 name: amap_special
 description: custom flutter plugin project for Amap.
-version: 0.0.22
+version: 0.0.23
 homepage: https://github.com/TimRian/Amap_flutter_plugin
 
 environment:

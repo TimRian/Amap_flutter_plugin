@@ -1,4 +1,4 @@
-## 0.0.22(add some methods)
+## 0.0.23(add some methods)
 
 
 * This is a map based on Gaode map plugin, more powerful functions. It has positioning function and accurate navigation ability. Able to draw accurate paths. The user experience is great.
